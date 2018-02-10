@@ -21,12 +21,15 @@
 //SOFTWARE.
 
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace MPQNet.Archive
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public class HeaderV4 : HeaderV3
     {
+        private const int MD5_DIGEST_SIZE = 0x10;
+
         /// <summary>
         /// Compressed size of the hash table
         /// </summary>
@@ -51,5 +54,47 @@ namespace MPQNet.Archive
         /// Compressed size of the BET block
         /// </summary>
         public ulong BetTableSize64 { get; }
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MD5_DIGEST_SIZE)]
+        private byte[] _MD5_BlockTable;
+        /// <summary>
+        /// MD5 of the block table before decryption
+        /// </summary>
+        public byte[] MD5_BlockTable => _MD5_BlockTable;
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MD5_DIGEST_SIZE)]
+        private byte[] _MD5_HashTable;
+        /// <summary>
+        /// MD5 of the hash table before decryption
+        /// </summary>
+        public byte[] MD5_HashTable => _MD5_HashTable;
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MD5_DIGEST_SIZE)]
+        private byte[] _MD5_HiBlockTable;
+        /// <summary>
+        /// MD5 of the hi-block table
+        /// </summary>
+        public byte[] MD5_HiBlockTable => _MD5_HiBlockTable;
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MD5_DIGEST_SIZE)]
+        private byte[] _MD5_BetTable;
+        /// <summary>
+        /// MD5 of the BET table before decryption
+        /// </summary>
+        public byte[] MD5_BetTable => _MD5_BetTable;
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MD5_DIGEST_SIZE)]
+        private byte[] _MD5_HetTable;
+        /// <summary>
+        /// MD5 of the HET table before decryption
+        /// </summary>
+        public byte[] MD5_HetTable => _MD5_HetTable;
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MD5_DIGEST_SIZE)]
+        private byte[] _MD5_MpqHeader;
+        /// <summary>
+        /// MD5 of the MPQ header from signature to (including) MD5_HetTable
+        /// </summary>
+        public byte[] MD5_MpqHeader => _MD5_MpqHeader;
     }
 }
