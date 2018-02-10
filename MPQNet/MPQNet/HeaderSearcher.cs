@@ -25,6 +25,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using MPQNet.Archive;
+using MPQNet.Helper;
 
 namespace MPQNet
 {
@@ -104,6 +105,24 @@ namespace MPQNet
             }
         }
 
+        private async Task<T> MarshalObjectFromBytes<T>() where T: Header
+        {
+            var buffer = new byte[Marshal.SizeOf<T>()];
+            await InputStream.ReadAsync(buffer, 0, buffer.Length);
+            var hBuffer = GCHandle.Alloc(buffer, GCHandleType.Pinned);
+            try
+            {
+                return Marshal.PtrToStructure<T>(hBuffer.AddrOfPinnedObject());
+            }
+            finally
+            {
+                if (hBuffer.IsAllocated)
+                {
+                    hBuffer.Free();
+                }
+            }
+        }
+
         protected virtual async Task<Header> ReadHeader()
         {
 
@@ -113,61 +132,21 @@ namespace MPQNet
             switch(formatVersion)
             {
                 case FormatVersions.V1:
-                    var buffer = new byte[Marshal.SizeOf<HeaderV1>()];
-                    await InputStream.ReadAsync(buffer, 0, buffer.Length);
-                    unsafe
-                    {
-                        fixed (byte* pBuffer = buffer)
-                        {
-                            return Marshal.PtrToStructure<HeaderV1>((IntPtr)pBuffer);
-                        }
-                    }
+                    return await InputStream.MarshalObjectFromBytesAsync<HeaderV1>();
                 case FormatVersions.V2:
-                    buffer = new byte[Marshal.SizeOf<HeaderV2>()];
-                    await InputStream.ReadAsync(buffer, 0, buffer.Length);
-                    unsafe
-                    {
-                        fixed (byte* pBuffer = buffer)
-                        {
-                            return Marshal.PtrToStructure<HeaderV2>((IntPtr)pBuffer);
-                        }
-                    }
+                    return await InputStream.MarshalObjectFromBytesAsync<HeaderV2>();
                 case FormatVersions.V3:
-                    buffer = new byte[Marshal.SizeOf<HeaderV3>()];
-                    await InputStream.ReadAsync(buffer, 0, buffer.Length);
-                    unsafe
-                    {
-                        fixed (byte* pBuffer = buffer)
-                        {
-                            return Marshal.PtrToStructure<HeaderV3>((IntPtr)pBuffer);
-                        }
-                    }
+                    return await InputStream.MarshalObjectFromBytesAsync<HeaderV3>();
                 case FormatVersions.V4:
-                    buffer = new byte[Marshal.SizeOf<HeaderV4>()];
-                    await InputStream.ReadAsync(buffer, 0, buffer.Length);
-                    unsafe
-                    {
-                        fixed (byte* pBuffer = buffer)
-                        {
-                            return Marshal.PtrToStructure<HeaderV4>((IntPtr)pBuffer);
-                        }
-                    }
+                    return await InputStream.MarshalObjectFromBytesAsync<HeaderV4>();
                 default:
                     throw new NotSupportedException("NotSupported format version");
             }
         }
 
-        protected virtual async Task<UserDataHeader> ReadUserData()
+        protected virtual Task<UserDataHeader> ReadUserData()
         {
-            var buffer = new byte[Marshal.SizeOf<UserDataHeader>()];
-            await InputStream.ReadAsync(buffer, 0, buffer.Length);
-            unsafe
-            {
-                fixed (byte* pBuffer = buffer)
-                {
-                    return Marshal.PtrToStructure<UserDataHeader>((IntPtr)pBuffer);
-                }
-            }
+            return InputStream.MarshalObjectFromBytesAsync<UserDataHeader>();
         }
     }
 }
