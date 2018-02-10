@@ -22,24 +22,27 @@
 
 using System.Runtime.InteropServices;
 
-namespace MPQNet.HeaderDefinition
+namespace MPQNet.ContentTable
 {
+    /// <summary>
+    /// Common header for HET and BET tables
+    /// </summary>
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class HeaderV3 : HeaderV2
+    public class TableHeader
     {
         /// <summary>
-        /// 64-bit version of the archive size
+        /// Header Signature of BET/HET tables
         /// </summary>
-        public ulong ArchiveSize64 { get; }
+        public HeaderSignature ID { get; }
 
         /// <summary>
-        /// 64-bit position of the BET table
+        /// Version. Seems to be always 1
         /// </summary>
-        public ulong BetTableOffset { get; }
+        public uint Version { get; }
 
         /// <summary>
-        /// 64-bit position of the HET table
+        /// Size of the contained table
         /// </summary>
-        public ulong HetTableOffset { get; }
+        public uint DataSize { get; }
     }
 }

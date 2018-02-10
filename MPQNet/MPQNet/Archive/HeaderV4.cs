@@ -20,26 +20,36 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-namespace MPQNet.HeaderDefinition
+using System.Runtime.InteropServices;
+
+namespace MPQNet.Archive
 {
-    /// <summary>
-    /// Header signatures of MPQ headers
-    /// </summary>
-    public enum HeaderSignatures : uint
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public class HeaderV4 : HeaderV3
     {
         /// <summary>
-        /// MPQ archive header ID ('MPQ\x1A')
+        /// Compressed size of the hash table
         /// </summary>
-        MPQ = 0x1A51504D,
+        public ulong HashTableSize64 { get; }
 
         /// <summary>
-        /// MPQ userdata entry ('MPQ\x1B')
+        /// Compressed size of the block table
         /// </summary>
-        MPQ_UserData = 0x1B51504D,
+        public ulong BlockTableSize64 { get; }
 
         /// <summary>
-        /// MPK archive header ID ('MPK\x1A')
+        /// Compressed size of the hi-block table
         /// </summary>
-        MPK = 0x1A4B504D,
+        public ulong HiBlockTableSize64 { get; }
+
+        /// <summary>
+        /// Compressed size of the HET block
+        /// </summary>
+        public ulong HetTableSize64 { get; }
+
+        /// <summary>
+        /// Compressed size of the BET block
+        /// </summary>
+        public ulong BetTableSize64 { get; }
     }
 }

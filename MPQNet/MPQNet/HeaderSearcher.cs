@@ -19,13 +19,12 @@
 //LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
+
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
-using MPQNet.HeaderDefinition;
+using MPQNet.Archive;
 
 namespace MPQNet
 {
@@ -66,7 +65,7 @@ namespace MPQNet
                             Header = await ReadHeader();
                             return;
                         case SearchResult.NotFound:
-                            throw new FormatException("Unable to find MPQ Archive header");
+                            throw new InvalidDataException("Unable to find MPQ Archive header");
                     }
                 }
             }

@@ -20,31 +20,26 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-namespace MPQNet.HeaderDefinition
+using System.Runtime.InteropServices;
+
+namespace MPQNet.Archive
 {
-    /// <summary>
-    /// Supported versions of MPQ Format
-    /// </summary>
-    public enum FormatVersions : ushort
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public class HeaderV2 : HeaderV1
     {
         /// <summary>
-        /// Used up to The Burning Crusade
+        /// Offset to the beginning of array of 16-bit high parts of file offsets.
         /// </summary>
-        V1 = 0,
+        public ulong ExtendedBlockTableOffset { get; }
 
         /// <summary>
-        /// The Burning Crusade and newer
+        /// High 16 bits of the hash table offset for large archives.
         /// </summary>
-        V2 = 1,
+        public ushort HashTableOffsetHigh { get; }
 
         /// <summary>
-        /// WoW - Cataclysm beta or newer
+        /// High 16 bits of the block table offset for large archives.
         /// </summary>
-        V3 = 2,
-
-        /// <summary>
-        /// WoW - Cataclysm beta or newer
-        /// </summary>
-        V4 = 3,
+        public ushort BlockTableOffsetHigh { get; }
     }
 }

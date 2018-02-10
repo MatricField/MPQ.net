@@ -22,7 +22,7 @@
 
 using System.Runtime.InteropServices;
 
-namespace MPQNet.HeaderDefinition
+namespace MPQNet.Archive
 {
     /// <summary>
     /// Header of all MPQ archives

@@ -22,34 +22,53 @@
 
 using System.Runtime.InteropServices;
 
-namespace MPQNet.HeaderDefinition
+namespace MPQNet.ContentTable
 {
+    /// <summary>
+    /// Structure for HET table header
+    /// </summary>
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class HeaderV4 : HeaderV3
+    public class HetTableHeader : TableHeader
     {
         /// <summary>
-        /// Compressed size of the hash table
+        /// Size of the entire HET table, including HET_TABLE_HEADER (in bytes)
         /// </summary>
-        public ulong HashTableSize64 { get; }
+        public uint TableSize;
 
         /// <summary>
-        /// Compressed size of the block table
+        /// Number of occupied entries in the HET table
         /// </summary>
-        public ulong BlockTableSize64 { get; }
+        public uint EntryCount;
 
         /// <summary>
-        /// Compressed size of the hi-block table
+        /// Total number of entries in the HET table
         /// </summary>
-        public ulong HiBlockTableSize64 { get; }
+        public uint TotalCount;
 
         /// <summary>
-        /// Compressed size of the HET block
+        /// Size of the name hash entry (in bits)
         /// </summary>
-        public ulong HetTableSize64 { get; }
+        public uint NameHashBitSize;
 
         /// <summary>
-        /// Compressed size of the BET block
+        /// Total size of file index (in bits)
         /// </summary>
-        public ulong BetTableSize64 { get; }
+        public uint IndexSizeTotal;
+
+        /// <summary>
+        /// Extra bits in the file index
+        /// </summary>
+        public uint IndexSizeExtra;
+
+        /// <summary>
+        /// Effective size of the file index (in bits)
+        /// </summary>
+        public uint IndexSize;
+
+        /// <summary>
+        /// Size of the block index subtable (in bytes)
+        /// </summary>
+        public uint IndexTableSize;
+
     }
 }

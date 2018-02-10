@@ -22,7 +22,7 @@
 
 using System.Runtime.InteropServices;
 
-namespace MPQNet.HeaderDefinition
+namespace MPQNet.Archive
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public class HeaderV1 : Header

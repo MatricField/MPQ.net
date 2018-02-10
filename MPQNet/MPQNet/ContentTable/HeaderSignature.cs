@@ -19,32 +19,22 @@
 //LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
-using System.Runtime.InteropServices;
 
-
-namespace MPQNet.HeaderDefinition
+namespace MPQNet.ContentTable
 {
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class UserDataHeader
+    /// <summary>
+    /// Header signature of BET/HET tables
+    /// </summary>
+    public enum HeaderSignature : uint
     {
         /// <summary>
-        /// The ID_MPQ_USERDATA ('MPQ\x1B') signature
+        /// Header of HET table. ('HET\x1a')
         /// </summary>
-        public HeaderSignatures ID { get; }
+        HET = 0x1A544548,
 
         /// <summary>
-        /// Maximum size of the user data
+        /// Header of BET table. ('BET\x1a')
         /// </summary>
-        public uint UserDataSize { get; }
-
-        /// <summary>
-        /// Offset of the MPQ header, relative to the begin of this header
-        /// </summary>
-        public uint HeaderOffset { get; }
-
-        /// <summary>
-        /// Appears to be size of user data header (Starcraft II maps)
-        /// </summary>
-        public uint UserDataHeaderSize { get; }
+        BET = 0x1A544542,
     }
 }
