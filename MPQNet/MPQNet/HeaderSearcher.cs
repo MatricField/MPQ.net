@@ -105,24 +105,6 @@ namespace MPQNet
             }
         }
 
-        private async Task<T> MarshalObjectFromBytes<T>() where T: Header
-        {
-            var buffer = new byte[Marshal.SizeOf<T>()];
-            await InputStream.ReadAsync(buffer, 0, buffer.Length);
-            var hBuffer = GCHandle.Alloc(buffer, GCHandleType.Pinned);
-            try
-            {
-                return Marshal.PtrToStructure<T>(hBuffer.AddrOfPinnedObject());
-            }
-            finally
-            {
-                if (hBuffer.IsAllocated)
-                {
-                    hBuffer.Free();
-                }
-            }
-        }
-
         protected virtual async Task<Header> ReadHeader()
         {
 
