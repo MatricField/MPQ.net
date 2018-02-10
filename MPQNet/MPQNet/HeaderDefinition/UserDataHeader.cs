@@ -27,9 +27,24 @@ namespace MPQNet.HeaderDefinition
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public class UserDataHeader
     {
+        /// <summary>
+        /// The ID_MPQ_USERDATA ('MPQ\x1B') signature
+        /// </summary>
         public HeaderSignatures ID { get; }
+
+        /// <summary>
+        /// Maximum size of the user data
+        /// </summary>
         public uint UserDataSize { get; }
+
+        /// <summary>
+        /// Offset of the MPQ header, relative to the begin of this header
+        /// </summary>
         public uint HeaderOffset { get; }
+
+        /// <summary>
+        /// Appears to be size of user data header (Starcraft II maps)
+        /// </summary>
         public uint UserDataHeaderSize { get; }
     }
 }

@@ -24,6 +24,9 @@ using System.Runtime.InteropServices;
 
 namespace MPQNet.HeaderDefinition
 {
+    /// <summary>
+    /// Header of all MPQ archives
+    /// </summary>
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public abstract class Header
     {

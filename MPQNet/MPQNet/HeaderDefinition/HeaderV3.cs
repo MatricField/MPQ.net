@@ -27,8 +27,19 @@ namespace MPQNet.HeaderDefinition
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public class HeaderV3 : HeaderV2
     {
+        /// <summary>
+        /// 64-bit version of the archive size
+        /// </summary>
         public ulong ArchiveSize64 { get; }
+
+        /// <summary>
+        /// 64-bit position of the BET table
+        /// </summary>
         public ulong BetTableOffset { get; }
+
+        /// <summary>
+        /// 64-bit position of the HET table
+        /// </summary>
         public ulong HetTableOffset { get; }
     }
 }

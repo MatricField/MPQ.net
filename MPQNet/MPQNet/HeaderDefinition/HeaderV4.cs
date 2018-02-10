@@ -27,10 +27,29 @@ namespace MPQNet.HeaderDefinition
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public class HeaderV4 : HeaderV3
     {
+        /// <summary>
+        /// Compressed size of the hash table
+        /// </summary>
         public ulong HashTableSize64 { get; }
+
+        /// <summary>
+        /// Compressed size of the block table
+        /// </summary>
         public ulong BlockTableSize64 { get; }
+
+        /// <summary>
+        /// Compressed size of the hi-block table
+        /// </summary>
         public ulong HiBlockTableSize64 { get; }
+
+        /// <summary>
+        /// Compressed size of the HET block
+        /// </summary>
         public ulong HetTableSize64 { get; }
+
+        /// <summary>
+        /// Compressed size of the BET block
+        /// </summary>
         public ulong BetTableSize64 { get; }
     }
 }

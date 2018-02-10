@@ -27,8 +27,19 @@ namespace MPQNet.HeaderDefinition
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public class HeaderV2 : HeaderV1
     {
+        /// <summary>
+        /// Offset to the beginning of array of 16-bit high parts of file offsets.
+        /// </summary>
         public ulong ExtendedBlockTableOffset { get; }
+
+        /// <summary>
+        /// High 16 bits of the hash table offset for large archives.
+        /// </summary>
         public ushort HashTableOffsetHigh { get; }
+
+        /// <summary>
+        /// High 16 bits of the block table offset for large archives.
+        /// </summary>
         public ushort BlockTableOffsetHigh { get; }
     }
 }
