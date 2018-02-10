@@ -19,32 +19,16 @@
 //LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
+
 using System.Runtime.InteropServices;
 
-
-namespace MPQNet.Archive
+namespace MPQNet.Header
 {
+    /// <summary>
+    /// Header of all MPQ archives
+    /// </summary>
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class UserDataHeader
+    public abstract class Header
     {
-        /// <summary>
-        /// The ID_MPQ_USERDATA ('MPQ\x1B') signature
-        /// </summary>
-        public HeaderSignatures ID { get; }
-
-        /// <summary>
-        /// Maximum size of the user data
-        /// </summary>
-        public uint UserDataSize { get; }
-
-        /// <summary>
-        /// Offset of the MPQ header, relative to the begin of this header
-        /// </summary>
-        public uint HeaderOffset { get; }
-
-        /// <summary>
-        /// Appears to be size of user data header (Starcraft II maps)
-        /// </summary>
-        public uint UserDataHeaderSize { get; }
     }
 }

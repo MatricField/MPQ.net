@@ -22,13 +22,24 @@
 
 using System.Runtime.InteropServices;
 
-namespace MPQNet.Archive
+namespace MPQNet.Header
 {
-    /// <summary>
-    /// Header of all MPQ archives
-    /// </summary>
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public abstract class Header
+    public class HeaderV3 : HeaderV2
     {
+        /// <summary>
+        /// 64-bit version of the archive size
+        /// </summary>
+        public ulong ArchiveSize64 { get; }
+
+        /// <summary>
+        /// 64-bit position of the BET table
+        /// </summary>
+        public ulong BetTableOffset { get; }
+
+        /// <summary>
+        /// 64-bit position of the HET table
+        /// </summary>
+        public ulong HetTableOffset { get; }
     }
 }

@@ -24,7 +24,7 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using MPQNet.Archive;
+using MPQNet.Header;
 using MPQNet.Helper;
 
 namespace MPQNet
@@ -34,6 +34,8 @@ namespace MPQNet
         public Header Header { get; private set; }
 
         public UserDataHeader UserDataHeader { get; private set; }
+
+        protected long UserDataOffset { get; set; }
 
         protected Stream InputStream { get; private set; }
 
@@ -60,7 +62,7 @@ namespace MPQNet
                     {
                         case SearchResult.UserDataFound:
                             UserDataHeader = await ReadUserData();
-                            InputStream.Seek(UserDataHeader.HeaderOffset, SeekOrigin.Begin);
+                            InputStream.Seek(UserDataOffset + UserDataHeader.HeaderOffset, SeekOrigin.Begin);
                             break;
                         case SearchResult.Found:
                             Header = await ReadHeader();
@@ -88,6 +90,7 @@ namespace MPQNet
                     {
                         case HeaderSignatures.MPQ_UserData:
                             InputStream.Seek(-sizeof(HeaderSignatures), SeekOrigin.Current);
+                            UserDataOffset = InputStream.Position;
                             return SearchResult.UserDataFound;
                         case HeaderSignatures.MPQ:
                         case HeaderSignatures.MPK:
@@ -105,7 +108,7 @@ namespace MPQNet
             }
         }
 
-        protected virtual async Task<Header> ReadHeader()
+        protected virtual async Task<Header.Header> ReadHeader()
         {
 
             InputStream.Seek(FORMAT_VERSION_OFFSET, SeekOrigin.Current);

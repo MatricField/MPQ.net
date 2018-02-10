@@ -19,27 +19,32 @@
 //LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
-
 using System.Runtime.InteropServices;
 
-namespace MPQNet.Archive
+
+namespace MPQNet.Header
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class HeaderV2 : HeaderV1
+    public class UserDataHeader
     {
         /// <summary>
-        /// Offset to the beginning of array of 16-bit high parts of file offsets.
+        /// The ID_MPQ_USERDATA ('MPQ\x1B') signature
         /// </summary>
-        public ulong ExtendedBlockTableOffset { get; }
+        public HeaderSignatures ID { get; }
 
         /// <summary>
-        /// High 16 bits of the hash table offset for large archives.
+        /// Maximum size of the user data
         /// </summary>
-        public ushort HashTableOffsetHigh { get; }
+        public uint UserDataSize { get; }
 
         /// <summary>
-        /// High 16 bits of the block table offset for large archives.
+        /// Offset of the MPQ header, relative to the begin of this header
         /// </summary>
-        public ushort BlockTableOffsetHigh { get; }
+        public uint HeaderOffset { get; }
+
+        /// <summary>
+        /// Appears to be size of user data header (Starcraft II maps)
+        /// </summary>
+        public uint UserDataHeaderSize { get; }
     }
 }

@@ -20,26 +20,31 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-using System.Runtime.InteropServices;
-
-namespace MPQNet.Archive
+namespace MPQNet.Header
 {
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class HeaderV3 : HeaderV2
+    /// <summary>
+    /// Supported versions of MPQ Format
+    /// </summary>
+    public enum FormatVersions : ushort
     {
         /// <summary>
-        /// 64-bit version of the archive size
+        /// Used up to The Burning Crusade
         /// </summary>
-        public ulong ArchiveSize64 { get; }
+        V1 = 0,
 
         /// <summary>
-        /// 64-bit position of the BET table
+        /// The Burning Crusade and newer
         /// </summary>
-        public ulong BetTableOffset { get; }
+        V2 = 1,
 
         /// <summary>
-        /// 64-bit position of the HET table
+        /// WoW - Cataclysm beta or newer
         /// </summary>
-        public ulong HetTableOffset { get; }
+        V3 = 2,
+
+        /// <summary>
+        /// WoW - Cataclysm beta or newer
+        /// </summary>
+        V4 = 3,
     }
 }

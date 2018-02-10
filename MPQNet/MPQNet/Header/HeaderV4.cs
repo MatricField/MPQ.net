@@ -21,9 +21,8 @@
 //SOFTWARE.
 
 using System.Runtime.InteropServices;
-using System.Text;
 
-namespace MPQNet.Archive
+namespace MPQNet.Header
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public class HeaderV4 : HeaderV3
