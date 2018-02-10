@@ -20,15 +20,21 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-using System.Runtime.InteropServices;
-
 namespace MPQNet.Header
 {
     /// <summary>
-    /// Header of all MPQ archives
+    /// Header signature of BET/HET tables
     /// </summary>
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public abstract class Header
+    public enum ExtTableHeaderSignatures : uint
     {
+        /// <summary>
+        /// Header of HET table. ('HET\x1a')
+        /// </summary>
+        HET = 0x1A544548,
+
+        /// <summary>
+        /// Header of BET table. ('BET\x1a')
+        /// </summary>
+        BET = 0x1A544542,
     }
 }

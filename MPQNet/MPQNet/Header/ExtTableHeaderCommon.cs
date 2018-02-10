@@ -20,21 +20,29 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-namespace MPQNet.ContentTable
+using System.Runtime.InteropServices;
+
+namespace MPQNet.Header
 {
     /// <summary>
-    /// Header signature of BET/HET tables
+    /// Common header for HET and BET tables
     /// </summary>
-    public enum HeaderSignature : uint
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public class ExtTableHeaderCommon
     {
         /// <summary>
-        /// Header of HET table. ('HET\x1a')
+        /// Header Signature of BET/HET tables
         /// </summary>
-        HET = 0x1A544548,
+        public ExtTableHeaderSignatures ID { get; }
 
         /// <summary>
-        /// Header of BET table. ('BET\x1a')
+        /// Version. Seems to be always 1
         /// </summary>
-        BET = 0x1A544542,
+        public uint Version { get; }
+
+        /// <summary>
+        /// Size of the contained table
+        /// </summary>
+        public uint DataSize { get; }
     }
 }

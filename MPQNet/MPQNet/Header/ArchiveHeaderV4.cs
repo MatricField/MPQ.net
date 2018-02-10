@@ -25,7 +25,7 @@ using System.Runtime.InteropServices;
 namespace MPQNet.Header
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class HeaderV4 : HeaderV3
+    public class ArchiveHeaderV4 : ArchiveHeaderV3
     {
         private const int MD5_DIGEST_SIZE = 0x10;
 

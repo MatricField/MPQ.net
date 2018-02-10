@@ -22,53 +22,24 @@
 
 using System.Runtime.InteropServices;
 
-namespace MPQNet.ContentTable
+namespace MPQNet.Header
 {
-    /// <summary>
-    /// Structure for HET table header
-    /// </summary>
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class HetTableHeader : TableHeader
+    public class ArchiveHeaderV3 : ArchiveHeaderV2
     {
         /// <summary>
-        /// Size of the entire HET table, including HET_TABLE_HEADER (in bytes)
+        /// 64-bit version of the archive size
         /// </summary>
-        public uint TableSize;
+        public ulong ArchiveSize64 { get; }
 
         /// <summary>
-        /// Number of occupied entries in the HET table
+        /// 64-bit position of the BET table
         /// </summary>
-        public uint EntryCount;
+        public ulong BetTableOffset { get; }
 
         /// <summary>
-        /// Total number of entries in the HET table
+        /// 64-bit position of the HET table
         /// </summary>
-        public uint TotalCount;
-
-        /// <summary>
-        /// Size of the name hash entry (in bits)
-        /// </summary>
-        public uint NameHashBitSize;
-
-        /// <summary>
-        /// Total size of file index (in bits)
-        /// </summary>
-        public uint IndexSizeTotal;
-
-        /// <summary>
-        /// Extra bits in the file index
-        /// </summary>
-        public uint IndexSizeExtra;
-
-        /// <summary>
-        /// Effective size of the file index (in bits)
-        /// </summary>
-        public uint IndexSize;
-
-        /// <summary>
-        /// Size of the block index subtable (in bytes)
-        /// </summary>
-        public uint IndexTableSize;
-
+        public ulong HetTableOffset { get; }
     }
 }

@@ -22,13 +22,13 @@
 
 using System.Runtime.InteropServices;
 
-namespace MPQNet.ContentTable
+namespace MPQNet.Header
 {
     /// <summary>
     /// Structure for BET table header
     /// </summary>
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class BetTableHeader : TableHeader
+    public class ExtTableHeaderBet : ExtTableHeaderCommon
     {
         /// <summary>
         /// Size of the entire BET table, including the header (in bytes)

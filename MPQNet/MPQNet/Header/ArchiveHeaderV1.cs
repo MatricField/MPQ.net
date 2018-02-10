@@ -25,12 +25,12 @@ using System.Runtime.InteropServices;
 namespace MPQNet.Header
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class HeaderV1 : Header
+    public class ArchiveHeaderV1 : ArchiveHeader
     {
         /// <summary>
         /// Indicates that the file is a MoPaQ archive.
         /// </summary>
-        public HeaderSignatures ID { get; }
+        public ArchiveHeaderSignatures ID { get; }
 
         /// <summary>
         /// Size of the archive header.

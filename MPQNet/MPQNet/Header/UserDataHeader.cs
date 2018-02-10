@@ -30,7 +30,7 @@ namespace MPQNet.Header
         /// <summary>
         /// The ID_MPQ_USERDATA ('MPQ\x1B') signature
         /// </summary>
-        public HeaderSignatures ID { get; }
+        public ArchiveHeaderSignatures ID { get; }
 
         /// <summary>
         /// Maximum size of the user data

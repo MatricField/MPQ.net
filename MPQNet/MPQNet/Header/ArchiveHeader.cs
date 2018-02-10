@@ -22,27 +22,13 @@
 
 using System.Runtime.InteropServices;
 
-namespace MPQNet.ContentTable
+namespace MPQNet.Header
 {
     /// <summary>
-    /// Common header for HET and BET tables
+    /// Header of all MPQ archives
     /// </summary>
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class TableHeader
+    public abstract class ArchiveHeader
     {
-        /// <summary>
-        /// Header Signature of BET/HET tables
-        /// </summary>
-        public HeaderSignature ID { get; }
-
-        /// <summary>
-        /// Version. Seems to be always 1
-        /// </summary>
-        public uint Version { get; }
-
-        /// <summary>
-        /// Size of the contained table
-        /// </summary>
-        public uint DataSize { get; }
     }
 }

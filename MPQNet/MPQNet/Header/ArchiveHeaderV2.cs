@@ -20,26 +20,26 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
+using System.Runtime.InteropServices;
+
 namespace MPQNet.Header
 {
-    /// <summary>
-    /// Header signatures of MPQ headers
-    /// </summary>
-    public enum HeaderSignatures : uint
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public class ArchiveHeaderV2 : ArchiveHeaderV1
     {
         /// <summary>
-        /// MPQ archive header ID ('MPQ\x1A')
+        /// Offset to the beginning of array of 16-bit high parts of file offsets.
         /// </summary>
-        MPQ = 0x1A51504D,
+        public ulong ExtendedBlockTableOffset { get; }
 
         /// <summary>
-        /// MPQ userdata entry ('MPQ\x1B')
+        /// High 16 bits of the hash table offset for large archives.
         /// </summary>
-        MPQ_UserData = 0x1B51504D,
+        public ushort HashTableOffsetHigh { get; }
 
         /// <summary>
-        /// MPK archive header ID ('MPK\x1A')
+        /// High 16 bits of the block table offset for large archives.
         /// </summary>
-        MPK = 0x1A4B504D,
+        public ushort BlockTableOffsetHigh { get; }
     }
 }
