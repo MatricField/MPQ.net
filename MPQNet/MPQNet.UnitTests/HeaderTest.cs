@@ -23,33 +23,29 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using MPQNet.Header;
+using System;
+using System.Text;
 
 namespace MPQNet.UnitTests
 {
     [TestClass]
-    public class UnitTest1
+    public class HeaderTest
     {
         [TestMethod]
-        public void TestMethod1()
+        public void CanReadArchiveHeader()
         {
-            ArchiveHeader headerNet;
-            using (var replayfile = File.Open(@"Replays\StandardBio.SC2Replay", FileMode.Open, FileAccess.Read))
+            HeaderSearcher Searcher;
+            using (var stream = File.Open(@"Replays\StandardBio.SC2Replay", FileMode.Open, FileAccess.Read))
             {
-                var searcher = new HeaderSearcher();
-                searcher.Search(replayfile).Wait();
-                headerNet = searcher.Header;
+                Searcher = new HeaderSearcher();
+                Searcher.Search(stream).Wait();
             }
-            dynamic Replay = MPYQ.Instance.MPQArchive(@"Replays\StandardBio.SC2Replay");
-            dynamic headerPY = Replay.header;
+            dynamic ReplayArchivePY = MPYQ.Instance.MPQArchive(@"Replays\StandardBio.SC2Replay");
+            var headerNet = Searcher.Header;
+            
+            dynamic headerPY = ReplayArchivePY.header;
             switch (headerNet)
             {
-                case ArchiveHeaderV4 v4:
-
-                    break;
-                case ArchiveHeaderV3 v3:
-                    break;
-                case ArchiveHeaderV2 v2:
-                    break;
                 case ArchiveHeaderV1 v1:
                     Assert.AreEqual(headerPY["magic"], v1.ID, nameof(ArchiveHeaderV1.ID));
                     Assert.AreEqual(headerPY["header_size"], v1.HeaderSize, nameof(ArchiveHeaderV1.HeaderSize));
@@ -60,6 +56,15 @@ namespace MPQNet.UnitTests
                     Assert.AreEqual(headerPY["hash_table_entries"], v1.HashTableEntriesCount, nameof(ArchiveHeaderV1.HashTableEntriesCount));
                     Assert.AreEqual(headerPY["block_table_entries"], v1.BlockTableEntriesCount, nameof(ArchiveHeaderV1.BlockTableEntriesCount));
                     break;
+            }
+            if(Searcher.UserDataHeader != null)
+            {
+                dynamic userDataPY = headerPY["user_data_header"];
+                var userData = Searcher.UserDataHeader;
+                Assert.AreEqual(userDataPY["magic"], Encoding.ASCII.GetString(BitConverter.GetBytes((uint)userData.ID)), nameof(UserDataHeader.ID));
+                Assert.AreEqual(userDataPY["user_data_size"], (int)userData.UserDataSize, nameof(UserDataHeader.UserDataSize));
+                Assert.AreEqual(userDataPY["mpq_header_offset"], (int)userData.HeaderOffset, nameof(UserDataHeader.HeaderOffset));
+                Assert.AreEqual(userDataPY["user_data_header_size"], (int)userData.UserDataHeaderSize, nameof(UserDataHeader.UserDataHeaderSize));
             }
         }
     }
