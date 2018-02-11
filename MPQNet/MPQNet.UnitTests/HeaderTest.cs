@@ -46,15 +46,15 @@ namespace MPQNet.UnitTests
             dynamic headerPY = ReplayArchivePY.header;
             switch (headerNet)
             {
-                case ArchiveHeaderV1 v1:
-                    Assert.AreEqual(headerPY["magic"], v1.ID, nameof(ArchiveHeaderV1.ID));
-                    Assert.AreEqual(headerPY["header_size"], v1.HeaderSize, nameof(ArchiveHeaderV1.HeaderSize));
-                    Assert.AreEqual(headerPY["format_version"], v1.FormatVersion, nameof(ArchiveHeaderV1.FormatVersion));
-                    Assert.AreEqual(headerPY["sector_size_shift"], v1.SectorSizeShift, nameof(ArchiveHeaderV1.SectorSizeShift));
-                    Assert.AreEqual(headerPY["hash_table_offset"], v1.HashTableOffset, nameof(ArchiveHeaderV1.HashTableOffset));
-                    Assert.AreEqual(headerPY["block_table_offset"], v1.BlockTableOffset, nameof(ArchiveHeaderV1.BlockTableOffset));
-                    Assert.AreEqual(headerPY["hash_table_entries"], v1.HashTableEntriesCount, nameof(ArchiveHeaderV1.HashTableEntriesCount));
-                    Assert.AreEqual(headerPY["block_table_entries"], v1.BlockTableEntriesCount, nameof(ArchiveHeaderV1.BlockTableEntriesCount));
+                case ArchiveHeader v1:
+                    Assert.AreEqual(headerPY["magic"], Encoding.ASCII.GetString(BitConverter.GetBytes((uint)v1.ID)), nameof(ArchiveHeader.ID));
+                    Assert.AreEqual(headerPY["header_size"], (int)v1.HeaderSize, nameof(ArchiveHeader.HeaderSize));
+                    Assert.AreEqual(headerPY["format_version"], (int)v1.FormatVersion, nameof(ArchiveHeader.FormatVersion));
+                    Assert.AreEqual(headerPY["sector_size_shift"], (int)v1.SectorSizeShift, nameof(ArchiveHeader.SectorSizeShift));
+                    Assert.AreEqual(headerPY["hash_table_offset"], (int)v1.HashTableOffset, nameof(ArchiveHeader.HashTableOffset));
+                    Assert.AreEqual(headerPY["block_table_offset"], (int)v1.BlockTableOffset, nameof(ArchiveHeader.BlockTableOffset));
+                    Assert.AreEqual(headerPY["hash_table_entries"], (int)v1.HashTableEntriesCount, nameof(ArchiveHeader.HashTableEntriesCount));
+                    Assert.AreEqual(headerPY["block_table_entries"], (int)v1.BlockTableEntriesCount, nameof(ArchiveHeader.BlockTableEntriesCount));
                     break;
             }
             if(Searcher.UserDataHeader != null)
