@@ -24,11 +24,60 @@ using System.Runtime.InteropServices;
 
 namespace MPQNet.Header
 {
-    /// <summary>
-    /// Header of all MPQ archives
-    /// </summary>
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public abstract class ArchiveHeader
+    public class ArchiveHeader : HeaderCommon
     {
+        /// <summary>
+        /// Size of the archive header.
+        /// </summary>
+        public uint HeaderSize { get; }
+
+        /// <summary>
+        /// Size of the whole archive, including the header.
+        /// Does not include the strong digital signature, 
+        /// if present. This size is used, among other things,
+        /// for determining the region to hash in computing 
+        /// the digital signature.
+        /// This field is deprecated in the Burning Crusade MoPaQ format,
+        /// and the size of the archive is calculated 
+        /// as the size from the beginning of the archive to the end 
+        /// of the hash table, block table, or extended block table(whichever is largest).
+        /// </summary>
+        public uint ArchiveSize { get; }
+
+        /// <summary>
+        /// MoPaQ format version.
+        /// </summary>
+        public FormatVersions FormatVersion { get; }
+
+        /// <summary>
+        /// Power of two exponent specifying the number of 512-byte 
+        /// disk sectors in each logical sector in the archive.
+        /// The size of each logical sector in the archive is
+        /// 512 * 2^SectorSizeShift.
+        /// </summary>
+        public ushort SectorSizeShift { get; }
+
+        /// <summary>
+        /// Offset to the beginning of the hash table,
+        /// relative to the beginning of the archive.
+        /// </summary>
+        public uint HashTableOffset { get; }
+
+        /// <summary>
+        /// Offset to the beginning of the block table,
+        /// relative to the beginning of the archive.
+        /// </summary>
+        public uint BlockTableOffset { get; }
+
+        /// <summary>
+        /// Number of entries in the hash table.
+        /// </summary>
+        public uint HashTableEntriesCount { get; }
+
+        /// <summary>
+        /// Number of entries in the block table.
+        /// </summary>
+        public uint BlockTableEntriesCount { get; }
     }
 }

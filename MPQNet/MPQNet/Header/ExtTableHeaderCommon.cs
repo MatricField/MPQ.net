@@ -28,13 +28,8 @@ namespace MPQNet.Header
     /// Common header for HET and BET tables
     /// </summary>
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class ExtTableHeaderCommon
+    public class ExtTableHeaderCommon : HeaderCommon
     {
-        /// <summary>
-        /// Header Signature of BET/HET tables
-        /// </summary>
-        public ExtTableHeaderSignatures ID { get; }
-
         /// <summary>
         /// Version. Seems to be always 1
         /// </summary>

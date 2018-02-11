@@ -25,13 +25,8 @@ using System.Runtime.InteropServices;
 namespace MPQNet.Header
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class UserDataHeader
+    public class UserDataHeader : HeaderCommon
     {
-        /// <summary>
-        /// The ID_MPQ_USERDATA ('MPQ\x1B') signature
-        /// </summary>
-        public ArchiveHeaderSignatures ID { get; }
-
         /// <summary>
         /// Maximum size of the user data
         /// </summary>

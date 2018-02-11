@@ -25,21 +25,21 @@ using System.Runtime.InteropServices;
 namespace MPQNet.Header
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class ArchiveHeaderV2 : ArchiveHeaderV1
+    public class ArchiveHeader3 : ArchiveHeader2
     {
         /// <summary>
-        /// Offset to the beginning of array of 16-bit high parts of file offsets.
+        /// 64-bit version of the archive size
         /// </summary>
-        public ulong ExtendedBlockTableOffset { get; }
+        public ulong ArchiveSize64 { get; }
 
         /// <summary>
-        /// High 16 bits of the hash table offset for large archives.
+        /// 64-bit position of the BET table
         /// </summary>
-        public ushort HashTableOffsetHigh { get; }
+        public ulong BetTableOffset { get; }
 
         /// <summary>
-        /// High 16 bits of the block table offset for large archives.
+        /// 64-bit position of the HET table
         /// </summary>
-        public ushort BlockTableOffsetHigh { get; }
+        public ulong HetTableOffset { get; }
     }
 }

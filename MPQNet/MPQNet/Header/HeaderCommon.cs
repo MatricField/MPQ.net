@@ -20,21 +20,19 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
+using System.Runtime.InteropServices;
+
 namespace MPQNet.Header
 {
     /// <summary>
-    /// Header signature of BET/HET tables
+    /// Common fields for all headers
     /// </summary>
-    public enum ExtTableHeaderSignatures : uint
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public abstract class HeaderCommon
     {
         /// <summary>
-        /// Header of HET table. ('HET\x1a')
+        /// Indicates that the file is a MoPaQ archive.
         /// </summary>
-        HET = 0x1A544548,
-
-        /// <summary>
-        /// Header of BET table. ('BET\x1a')
-        /// </summary>
-        BET = 0x1A544542,
+        public Signatures ID { get; }
     }
 }

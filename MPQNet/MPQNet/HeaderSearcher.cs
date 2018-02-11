@@ -84,19 +84,19 @@ namespace MPQNet
             {
                 for (; ; )
                 {
-                    var headerSignature = (ArchiveHeaderSignatures)InputReader.ReadUInt32();
+                    var headerSignature = (Signatures)InputReader.ReadUInt32();
                     switch (headerSignature)
                     {
-                        case ArchiveHeaderSignatures.MPQ_UserData:
-                            InputStream.Seek(-sizeof(ArchiveHeaderSignatures), SeekOrigin.Current);
+                        case Signatures.MPQ_UserData:
+                            InputStream.Seek(-sizeof(Signatures), SeekOrigin.Current);
                             UserDataOffset = InputStream.Position;
                             return SearchResult.UserDataFound;
-                        case ArchiveHeaderSignatures.MPQ:
-                        case ArchiveHeaderSignatures.MPK:
-                            InputStream.Seek(-sizeof(ArchiveHeaderSignatures), SeekOrigin.Current);
+                        case Signatures.MPQ:
+                        case Signatures.MPK:
+                            InputStream.Seek(-sizeof(Signatures), SeekOrigin.Current);
                             return SearchResult.Found;
                         default:
-                            InputStream.Seek(0x200 - sizeof(ArchiveHeaderSignatures), SeekOrigin.Current);
+                            InputStream.Seek(0x200 - sizeof(Signatures), SeekOrigin.Current);
                             break;
                     }
                 }
@@ -107,7 +107,7 @@ namespace MPQNet
             }
         }
 
-        protected virtual async Task<Header.ArchiveHeader> ReadHeader()
+        protected virtual async Task<ArchiveHeader> ReadHeader()
         {
 
             InputStream.Seek(FORMAT_VERSION_OFFSET, SeekOrigin.Current);
@@ -116,13 +116,13 @@ namespace MPQNet
             switch(formatVersion)
             {
                 case FormatVersions.V1:
-                    return await InputStream.MarshalObjectFromBytesAsync<ArchiveHeaderV1>();
+                    return await InputStream.MarshalObjectFromBytesAsync<ArchiveHeader>();
                 case FormatVersions.V2:
-                    return await InputStream.MarshalObjectFromBytesAsync<ArchiveHeaderV2>();
+                    return await InputStream.MarshalObjectFromBytesAsync<ArchiveHeader2>();
                 case FormatVersions.V3:
-                    return await InputStream.MarshalObjectFromBytesAsync<ArchiveHeaderV3>();
+                    return await InputStream.MarshalObjectFromBytesAsync<ArchiveHeader3>();
                 case FormatVersions.V4:
-                    return await InputStream.MarshalObjectFromBytesAsync<ArchiveHeaderV4>();
+                    return await InputStream.MarshalObjectFromBytesAsync<ArchiveHeader4>();
                 default:
                     throw new NotSupportedException("NotSupported format version");
             }

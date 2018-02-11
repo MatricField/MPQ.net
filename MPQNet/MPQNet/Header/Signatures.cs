@@ -20,26 +20,36 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-using System.Runtime.InteropServices;
-
 namespace MPQNet.Header
 {
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class ArchiveHeaderV3 : ArchiveHeaderV2
+    /// <summary>
+    /// Header signatures of MPQ headers
+    /// </summary>
+    public enum Signatures : uint
     {
         /// <summary>
-        /// 64-bit version of the archive size
+        /// MPQ archive header ID ('MPQ\x1A')
         /// </summary>
-        public ulong ArchiveSize64 { get; }
+        MPQ = 0x1A51504D,
 
         /// <summary>
-        /// 64-bit position of the BET table
+        /// MPQ userdata entry ('MPQ\x1B')
         /// </summary>
-        public ulong BetTableOffset { get; }
+        MPQ_UserData = 0x1B51504D,
 
         /// <summary>
-        /// 64-bit position of the HET table
+        /// MPK archive header ID ('MPK\x1A')
         /// </summary>
-        public ulong HetTableOffset { get; }
+        MPK = 0x1A4B504D,
+
+        /// <summary>
+        /// Header of HET table. ('HET\x1a')
+        /// </summary>
+        HET = 0x1A544548,
+
+        /// <summary>
+        /// Header of BET table. ('BET\x1a')
+        /// </summary>
+        BET = 0x1A544542,
     }
 }
