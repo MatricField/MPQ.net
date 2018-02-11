@@ -31,7 +31,7 @@ namespace MPQNet
 {
     public class HeaderSearcher
     {
-        public Header Header { get; private set; }
+        public ArchiveHeader Header { get; private set; }
 
         public UserDataHeader UserDataHeader { get; private set; }
 
