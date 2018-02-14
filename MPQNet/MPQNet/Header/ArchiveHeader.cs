@@ -82,7 +82,7 @@ namespace MPQNet.Header
         /// </summary>
         public uint BlockTableEntriesCount { get; }
 
-        #region Structual Equality
+        #region Structural Equality
         public override bool Equals(object obj)
         {
             return Equals(obj as ArchiveHeader);

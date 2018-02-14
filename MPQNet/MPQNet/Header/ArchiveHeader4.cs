@@ -21,6 +21,7 @@
 //SOFTWARE.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -99,7 +100,7 @@ namespace MPQNet.Header
         /// </summary>
         public IReadOnlyList<byte> MD5_MpqHeader => _MD5_MpqHeader;
 
-        #region Structual Equality
+        #region Structural Equality
         public override bool Equals(object obj)
         {
             return Equals(obj as ArchiveHeader4);
@@ -131,14 +132,12 @@ namespace MPQNet.Header
             hashCode = hashCode * -1521134295 + HiBlockTableSize64.GetHashCode();
             hashCode = hashCode * -1521134295 + HetTableSize64.GetHashCode();
             hashCode = hashCode * -1521134295 + BetTableSize64.GetHashCode();
-            // TODO: intergate MD5 hash of tables into header hash
-
-            //hashCode = hashCode * -1521134295 + EqualityComparer<IReadOnlyList<byte>>.Default.GetHashCode(MD5_BlockTable);
-            //hashCode = hashCode * -1521134295 + EqualityComparer<IReadOnlyList<byte>>.Default.GetHashCode(MD5_HashTable);
-            //hashCode = hashCode * -1521134295 + EqualityComparer<IReadOnlyList<byte>>.Default.GetHashCode(MD5_HiBlockTable);
-            //hashCode = hashCode * -1521134295 + EqualityComparer<IReadOnlyList<byte>>.Default.GetHashCode(MD5_BetTable);
-            //hashCode = hashCode * -1521134295 + EqualityComparer<IReadOnlyList<byte>>.Default.GetHashCode(MD5_HetTable);
-            //hashCode = hashCode * -1521134295 + EqualityComparer<IReadOnlyList<byte>>.Default.GetHashCode(MD5_MpqHeader);
+            hashCode = hashCode * -1521134295 +((IStructuralEquatable)MD5_BlockTable).GetHashCode(EqualityComparer<byte>.Default);
+            hashCode = hashCode * -1521134295 +((IStructuralEquatable)MD5_HashTable).GetHashCode(EqualityComparer<byte>.Default);
+            hashCode = hashCode * -1521134295 +((IStructuralEquatable)MD5_HiBlockTable).GetHashCode(EqualityComparer<byte>.Default);
+            hashCode = hashCode * -1521134295 +((IStructuralEquatable)MD5_BetTable).GetHashCode(EqualityComparer<byte>.Default);
+            hashCode = hashCode * -1521134295 +((IStructuralEquatable)MD5_HetTable).GetHashCode(EqualityComparer<byte>.Default);
+            hashCode = hashCode * -1521134295 +((IStructuralEquatable)MD5_MpqHeader).GetHashCode(EqualityComparer<byte>.Default);
             return hashCode;
         }
 

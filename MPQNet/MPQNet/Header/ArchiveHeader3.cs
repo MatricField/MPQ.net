@@ -44,7 +44,7 @@ namespace MPQNet.Header
         /// </summary>
         public ulong HetTableOffset { get; }
 
-        #region Structual Equality
+        #region Structural Equality
         public override bool Equals(object obj)
         {
             return Equals(obj as ArchiveHeader3);

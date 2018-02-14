@@ -19,64 +19,73 @@
 //LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
+
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-
 namespace MPQNet.Header
 {
+    /// <summary>
+    /// File description block contains informations about the file
+    /// </summary>
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class UserDataHeader : HeaderCommon, IEquatable<UserDataHeader>
+    public class BlockEntry : IEquatable<BlockEntry>
     {
         /// <summary>
-        /// Maximum size of the user data
+        ///  Offset of the beginning of the file, relative to the beginning of the archive.
         /// </summary>
-        public uint UserDataSize { get; }
+        public uint FilePos { get; }
 
         /// <summary>
-        /// Offset of the MPQ header, relative to the begin of this header
+        /// Compressed file size
         /// </summary>
-        public uint HeaderOffset { get; }
+        public uint CompressedSize { get; }
 
         /// <summary>
-        /// Appears to be size of user data header (Starcraft II maps)
+        /// Only valid if the block is a file; otherwise meaningless, and should be 0.
+        /// If the file is compressed, this is the size of the uncompressed file data.
         /// </summary>
-        public uint UserDataHeaderSize { get; }
+        public uint FileSize { get; }
+
+        /// <summary>
+        /// Flags for the file.
+        /// </summary>
+        public MPQFileFlags Flags { get; }
 
         #region Structural Equality
         public override bool Equals(object obj)
         {
-            return Equals(obj as UserDataHeader);
+            return Equals(obj as BlockEntry);
         }
 
-        public bool Equals(UserDataHeader other)
+        public bool Equals(BlockEntry other)
         {
             return other != null &&
-                   base.Equals(other) &&
-                   UserDataSize == other.UserDataSize &&
-                   HeaderOffset == other.HeaderOffset &&
-                   UserDataHeaderSize == other.UserDataHeaderSize;
+                   FilePos == other.FilePos &&
+                   CompressedSize == other.CompressedSize &&
+                   FileSize == other.FileSize &&
+                   Flags == other.Flags;
         }
 
         public override int GetHashCode()
         {
-            var hashCode = 1984121872;
-            hashCode = hashCode * -1521134295 + base.GetHashCode();
-            hashCode = hashCode * -1521134295 + UserDataSize.GetHashCode();
-            hashCode = hashCode * -1521134295 + HeaderOffset.GetHashCode();
-            hashCode = hashCode * -1521134295 + UserDataHeaderSize.GetHashCode();
+            var hashCode = -1133767338;
+            hashCode = hashCode * -1521134295 + FilePos.GetHashCode();
+            hashCode = hashCode * -1521134295 + CompressedSize.GetHashCode();
+            hashCode = hashCode * -1521134295 + FileSize.GetHashCode();
+            hashCode = hashCode * -1521134295 + Flags.GetHashCode();
             return hashCode;
         }
 
-        public static bool operator ==(UserDataHeader header1, UserDataHeader header2)
+        public static bool operator ==(BlockEntry entry1, BlockEntry entry2)
         {
-            return EqualityComparer<UserDataHeader>.Default.Equals(header1, header2);
+            return EqualityComparer<BlockEntry>.Default.Equals(entry1, entry2);
         }
 
-        public static bool operator !=(UserDataHeader header1, UserDataHeader header2)
+        public static bool operator !=(BlockEntry entry1, BlockEntry entry2)
         {
-            return !(header1 == header2);
+            return !(entry1 == entry2);
         } 
         #endregion
     }

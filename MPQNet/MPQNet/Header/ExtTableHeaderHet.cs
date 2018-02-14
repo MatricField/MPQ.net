@@ -72,7 +72,7 @@ namespace MPQNet.Header
         /// </summary>
         public uint IndexTableSize { get; }
 
-        #region Structual Equality
+        #region Structural Equality
         public override bool Equals(object obj)
         {
             return Equals(obj as ExtTableHeaderHet);
