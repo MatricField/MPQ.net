@@ -19,13 +19,15 @@
 //LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
+using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 
 namespace MPQNet.Header
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class UserDataHeader : HeaderCommon
+    public class UserDataHeader : HeaderCommon, IEquatable<UserDataHeader>
     {
         /// <summary>
         /// Maximum size of the user data
@@ -41,5 +43,41 @@ namespace MPQNet.Header
         /// Appears to be size of user data header (Starcraft II maps)
         /// </summary>
         public uint UserDataHeaderSize { get; }
+
+        #region Structual Equality
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as UserDataHeader);
+        }
+
+        public bool Equals(UserDataHeader other)
+        {
+            return other != null &&
+                   base.Equals(other) &&
+                   UserDataSize == other.UserDataSize &&
+                   HeaderOffset == other.HeaderOffset &&
+                   UserDataHeaderSize == other.UserDataHeaderSize;
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = 1984121872;
+            hashCode = hashCode * -1521134295 + base.GetHashCode();
+            hashCode = hashCode * -1521134295 + UserDataSize.GetHashCode();
+            hashCode = hashCode * -1521134295 + HeaderOffset.GetHashCode();
+            hashCode = hashCode * -1521134295 + UserDataHeaderSize.GetHashCode();
+            return hashCode;
+        }
+
+        public static bool operator ==(UserDataHeader header1, UserDataHeader header2)
+        {
+            return EqualityComparer<UserDataHeader>.Default.Equals(header1, header2);
+        }
+
+        public static bool operator !=(UserDataHeader header1, UserDataHeader header2)
+        {
+            return !(header1 == header2);
+        } 
+        #endregion
     }
 }

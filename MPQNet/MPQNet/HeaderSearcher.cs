@@ -116,13 +116,13 @@ namespace MPQNet
             switch(formatVersion)
             {
                 case FormatVersions.V1:
-                    return await InputStream.MarshalObjectFromBytesAsync<ArchiveHeader>();
+                    return await InputStream.MarshalObjectFromStreamAsync<ArchiveHeader>();
                 case FormatVersions.V2:
-                    return await InputStream.MarshalObjectFromBytesAsync<ArchiveHeader2>();
+                    return await InputStream.MarshalObjectFromStreamAsync<ArchiveHeader2>();
                 case FormatVersions.V3:
-                    return await InputStream.MarshalObjectFromBytesAsync<ArchiveHeader3>();
+                    return await InputStream.MarshalObjectFromStreamAsync<ArchiveHeader3>();
                 case FormatVersions.V4:
-                    return await InputStream.MarshalObjectFromBytesAsync<ArchiveHeader4>();
+                    return await InputStream.MarshalObjectFromStreamAsync<ArchiveHeader4>();
                 default:
                     throw new NotSupportedException("NotSupported format version");
             }
@@ -130,7 +130,7 @@ namespace MPQNet
 
         protected virtual Task<UserDataHeader> ReadUserData()
         {
-            return InputStream.MarshalObjectFromBytesAsync<UserDataHeader>();
+            return InputStream.MarshalObjectFromStreamAsync<UserDataHeader>();
         }
     }
 }

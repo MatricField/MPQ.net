@@ -22,6 +22,7 @@
 
 using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
@@ -32,10 +33,9 @@ namespace MPQNet.Helper
     /// </summary>
     public static class MarshalHelper
     {
-        public static async Task<T> MarshalObjectFromBytesAsync<T>(this Stream stream)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T MarshalObjectFromBytes<T>(this byte[] buffer)
         {
-            var buffer = new byte[Marshal.SizeOf<T>()];
-            await stream.ReadAsync(buffer, 0, buffer.Length);
             var hBuffer = GCHandle.Alloc(buffer, GCHandleType.Pinned);
             try
             {
@@ -50,16 +50,20 @@ namespace MPQNet.Helper
             }
         }
 
-        public static T MarshalObjectFromBytes<T>(this Stream stream)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static async Task<T> MarshalObjectFromStreamAsync<T>(this Stream stream)
         {
-            try
-            {
-                return MarshalObjectFromBytesAsync<T>(stream).Result;
-            }
-            catch(AggregateException ex)
-            {
-                throw ex.InnerException;
-            }
+            var buffer = new byte[Marshal.SizeOf<T>()];
+            await stream.ReadAsync(buffer, 0, buffer.Length);
+            return buffer.MarshalObjectFromBytes<T>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T MarshalObjectFromStream<T>(this Stream stream)
+        {
+            var buffer = new byte[Marshal.SizeOf<T>()];
+            stream.Read(buffer, 0, buffer.Length);
+            return buffer.MarshalObjectFromBytes<T>();
         }
     }
 }

@@ -20,6 +20,8 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
+using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace MPQNet.Header
@@ -28,7 +30,7 @@ namespace MPQNet.Header
     /// Common header for HET and BET tables
     /// </summary>
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class ExtTableHeaderCommon : HeaderCommon
+    public class ExtTableHeaderCommon : HeaderCommon, IEquatable<ExtTableHeaderCommon>
     {
         /// <summary>
         /// Version. Seems to be always 1
@@ -39,5 +41,39 @@ namespace MPQNet.Header
         /// Size of the contained table
         /// </summary>
         public uint DataSize { get; }
+
+        #region Structual Equality
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as ExtTableHeaderCommon);
+        }
+
+        public bool Equals(ExtTableHeaderCommon other)
+        {
+            return other != null &&
+                   base.Equals(other) &&
+                   Version == other.Version &&
+                   DataSize == other.DataSize;
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = -184249525;
+            hashCode = hashCode * -1521134295 + base.GetHashCode();
+            hashCode = hashCode * -1521134295 + Version.GetHashCode();
+            hashCode = hashCode * -1521134295 + DataSize.GetHashCode();
+            return hashCode;
+        }
+
+        public static bool operator ==(ExtTableHeaderCommon common1, ExtTableHeaderCommon common2)
+        {
+            return EqualityComparer<ExtTableHeaderCommon>.Default.Equals(common1, common2);
+        }
+
+        public static bool operator !=(ExtTableHeaderCommon common1, ExtTableHeaderCommon common2)
+        {
+            return !(common1 == common2);
+        } 
+        #endregion
     }
 }

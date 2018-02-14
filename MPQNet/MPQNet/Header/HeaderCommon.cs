@@ -20,7 +20,10 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
+using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace MPQNet.Header
 {
@@ -28,11 +31,39 @@ namespace MPQNet.Header
     /// Common fields for all headers
     /// </summary>
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public abstract class HeaderCommon
+    public abstract class HeaderCommon : IEquatable<HeaderCommon>
     {
         /// <summary>
         /// Indicates that the file is a MoPaQ archive.
         /// </summary>
         public Signatures ID { get; }
+
+        #region Structual Equality
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as HeaderCommon);
+        }
+
+        public bool Equals(HeaderCommon other)
+        {
+            return other != null &&
+                   ID == other.ID;
+        }
+
+        public override int GetHashCode()
+        {
+            return 1213502048 + ID.GetHashCode();
+        }
+
+        public static bool operator ==(HeaderCommon common1, HeaderCommon common2)
+        {
+            return EqualityComparer<HeaderCommon>.Default.Equals(common1, common2);
+        }
+
+        public static bool operator !=(HeaderCommon common1, HeaderCommon common2)
+        {
+            return !(common1 == common2);
+        }
+        #endregion
     }
 }

@@ -20,12 +20,14 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
+using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace MPQNet.Header
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class ArchiveHeader : HeaderCommon
+    public class ArchiveHeader : HeaderCommon, IEquatable<ArchiveHeader>
     {
         /// <summary>
         /// Size of the archive header.
@@ -79,5 +81,51 @@ namespace MPQNet.Header
         /// Number of entries in the block table.
         /// </summary>
         public uint BlockTableEntriesCount { get; }
+
+        #region Structual Equality
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as ArchiveHeader);
+        }
+
+        public bool Equals(ArchiveHeader other)
+        {
+            return other != null &&
+                   base.Equals(other) &&
+                   HeaderSize == other.HeaderSize &&
+                   ArchiveSize == other.ArchiveSize &&
+                   FormatVersion == other.FormatVersion &&
+                   SectorSizeShift == other.SectorSizeShift &&
+                   HashTableOffset == other.HashTableOffset &&
+                   BlockTableOffset == other.BlockTableOffset &&
+                   HashTableEntriesCount == other.HashTableEntriesCount &&
+                   BlockTableEntriesCount == other.BlockTableEntriesCount;
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = -178944793;
+            hashCode = hashCode * -1521134295 + base.GetHashCode();
+            hashCode = hashCode * -1521134295 + HeaderSize.GetHashCode();
+            hashCode = hashCode * -1521134295 + ArchiveSize.GetHashCode();
+            hashCode = hashCode * -1521134295 + FormatVersion.GetHashCode();
+            hashCode = hashCode * -1521134295 + SectorSizeShift.GetHashCode();
+            hashCode = hashCode * -1521134295 + HashTableOffset.GetHashCode();
+            hashCode = hashCode * -1521134295 + BlockTableOffset.GetHashCode();
+            hashCode = hashCode * -1521134295 + HashTableEntriesCount.GetHashCode();
+            hashCode = hashCode * -1521134295 + BlockTableEntriesCount.GetHashCode();
+            return hashCode;
+        }
+
+        public static bool operator ==(ArchiveHeader header1, ArchiveHeader header2)
+        {
+            return EqualityComparer<ArchiveHeader>.Default.Equals(header1, header2);
+        }
+
+        public static bool operator !=(ArchiveHeader header1, ArchiveHeader header2)
+        {
+            return !(header1 == header2);
+        } 
+        #endregion
     }
 }

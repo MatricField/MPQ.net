@@ -20,12 +20,15 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace MPQNet.Header
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class ArchiveHeader4 : ArchiveHeader3
+    public class ArchiveHeader4 : ArchiveHeader3, IEquatable<ArchiveHeader4>
     {
         private const int MD5_DIGEST_SIZE = 0x10;
 
@@ -59,41 +62,95 @@ namespace MPQNet.Header
         /// <summary>
         /// MD5 of the block table before decryption
         /// </summary>
-        public byte[] MD5_BlockTable => _MD5_BlockTable;
+        public IReadOnlyList<byte> MD5_BlockTable => _MD5_BlockTable;
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = MD5_DIGEST_SIZE)]
         private byte[] _MD5_HashTable;
         /// <summary>
         /// MD5 of the hash table before decryption
         /// </summary>
-        public byte[] MD5_HashTable => _MD5_HashTable;
+        public IReadOnlyList<byte> MD5_HashTable => _MD5_HashTable;
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = MD5_DIGEST_SIZE)]
         private byte[] _MD5_HiBlockTable;
         /// <summary>
         /// MD5 of the hi-block table
         /// </summary>
-        public byte[] MD5_HiBlockTable => _MD5_HiBlockTable;
+        public IReadOnlyList<byte> MD5_HiBlockTable => _MD5_HiBlockTable;
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = MD5_DIGEST_SIZE)]
         private byte[] _MD5_BetTable;
         /// <summary>
         /// MD5 of the BET table before decryption
         /// </summary>
-        public byte[] MD5_BetTable => _MD5_BetTable;
+        public IReadOnlyList<byte> MD5_BetTable => _MD5_BetTable;
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = MD5_DIGEST_SIZE)]
         private byte[] _MD5_HetTable;
         /// <summary>
         /// MD5 of the HET table before decryption
         /// </summary>
-        public byte[] MD5_HetTable => _MD5_HetTable;
+        public IReadOnlyList<byte> MD5_HetTable => _MD5_HetTable;
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = MD5_DIGEST_SIZE)]
         private byte[] _MD5_MpqHeader;
         /// <summary>
         /// MD5 of the MPQ header from signature to (including) MD5_HetTable
         /// </summary>
-        public byte[] MD5_MpqHeader => _MD5_MpqHeader;
+        public IReadOnlyList<byte> MD5_MpqHeader => _MD5_MpqHeader;
+
+        #region Structual Equality
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as ArchiveHeader4);
+        }
+
+        public bool Equals(ArchiveHeader4 other)
+        {
+            return other != null &&
+                   base.Equals(other) &&
+                   HashTableSize64 == other.HashTableSize64 &&
+                   BlockTableSize64 == other.BlockTableSize64 &&
+                   HiBlockTableSize64 == other.HiBlockTableSize64 &&
+                   HetTableSize64 == other.HetTableSize64 &&
+                   BetTableSize64 == other.BetTableSize64 &&
+                   Enumerable.SequenceEqual(MD5_BlockTable, other.MD5_BlockTable) &&
+                   Enumerable.SequenceEqual(MD5_HashTable, other.MD5_HashTable) &&
+                   Enumerable.SequenceEqual(MD5_HiBlockTable, other.MD5_HiBlockTable) &&
+                   Enumerable.SequenceEqual(MD5_BetTable, other.MD5_BetTable) &&
+                   Enumerable.SequenceEqual(MD5_HetTable, other.MD5_HetTable) &&
+                   Enumerable.SequenceEqual(MD5_MpqHeader, other.MD5_MpqHeader);
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = -223769345;
+            hashCode = hashCode * -1521134295 + base.GetHashCode();
+            hashCode = hashCode * -1521134295 + HashTableSize64.GetHashCode();
+            hashCode = hashCode * -1521134295 + BlockTableSize64.GetHashCode();
+            hashCode = hashCode * -1521134295 + HiBlockTableSize64.GetHashCode();
+            hashCode = hashCode * -1521134295 + HetTableSize64.GetHashCode();
+            hashCode = hashCode * -1521134295 + BetTableSize64.GetHashCode();
+            // TODO: intergate MD5 hash of tables into header hash
+
+            //hashCode = hashCode * -1521134295 + EqualityComparer<IReadOnlyList<byte>>.Default.GetHashCode(MD5_BlockTable);
+            //hashCode = hashCode * -1521134295 + EqualityComparer<IReadOnlyList<byte>>.Default.GetHashCode(MD5_HashTable);
+            //hashCode = hashCode * -1521134295 + EqualityComparer<IReadOnlyList<byte>>.Default.GetHashCode(MD5_HiBlockTable);
+            //hashCode = hashCode * -1521134295 + EqualityComparer<IReadOnlyList<byte>>.Default.GetHashCode(MD5_BetTable);
+            //hashCode = hashCode * -1521134295 + EqualityComparer<IReadOnlyList<byte>>.Default.GetHashCode(MD5_HetTable);
+            //hashCode = hashCode * -1521134295 + EqualityComparer<IReadOnlyList<byte>>.Default.GetHashCode(MD5_MpqHeader);
+            return hashCode;
+        }
+
+        public static bool operator ==(ArchiveHeader4 header1, ArchiveHeader4 header2)
+        {
+            return EqualityComparer<ArchiveHeader4>.Default.Equals(header1, header2);
+        }
+
+        public static bool operator !=(ArchiveHeader4 header1, ArchiveHeader4 header2)
+        {
+            return !(header1 == header2);
+        } 
+        #endregion
     }
 }

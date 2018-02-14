@@ -20,12 +20,14 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
+using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace MPQNet.Header
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class ArchiveHeader2 : ArchiveHeader
+    public class ArchiveHeader2 : ArchiveHeader, IEquatable<ArchiveHeader2>
     {
         /// <summary>
         /// Offset to the beginning of array of 16-bit high parts of file offsets.
@@ -41,5 +43,41 @@ namespace MPQNet.Header
         /// High 16 bits of the block table offset for large archives.
         /// </summary>
         public ushort BlockTableOffsetHigh { get; }
+
+        #region Structual Equality
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as ArchiveHeader2);
+        }
+
+        public bool Equals(ArchiveHeader2 other)
+        {
+            return other != null &&
+                   base.Equals(other) &&
+                   ExtendedBlockTableOffset == other.ExtendedBlockTableOffset &&
+                   HashTableOffsetHigh == other.HashTableOffsetHigh &&
+                   BlockTableOffsetHigh == other.BlockTableOffsetHigh;
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = 445357405;
+            hashCode = hashCode * -1521134295 + base.GetHashCode();
+            hashCode = hashCode * -1521134295 + ExtendedBlockTableOffset.GetHashCode();
+            hashCode = hashCode * -1521134295 + HashTableOffsetHigh.GetHashCode();
+            hashCode = hashCode * -1521134295 + BlockTableOffsetHigh.GetHashCode();
+            return hashCode;
+        }
+
+        public static bool operator ==(ArchiveHeader2 header1, ArchiveHeader2 header2)
+        {
+            return EqualityComparer<ArchiveHeader2>.Default.Equals(header1, header2);
+        }
+
+        public static bool operator !=(ArchiveHeader2 header1, ArchiveHeader2 header2)
+        {
+            return !(header1 == header2);
+        }
+        #endregion
     }
 }
