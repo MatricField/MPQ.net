@@ -132,12 +132,14 @@ namespace MPQNet.Header
             hashCode = hashCode * -1521134295 + HiBlockTableSize64.GetHashCode();
             hashCode = hashCode * -1521134295 + HetTableSize64.GetHashCode();
             hashCode = hashCode * -1521134295 + BetTableSize64.GetHashCode();
-            hashCode = hashCode * -1521134295 +((IStructuralEquatable)MD5_BlockTable).GetHashCode(EqualityComparer<byte>.Default);
-            hashCode = hashCode * -1521134295 +((IStructuralEquatable)MD5_HashTable).GetHashCode(EqualityComparer<byte>.Default);
-            hashCode = hashCode * -1521134295 +((IStructuralEquatable)MD5_HiBlockTable).GetHashCode(EqualityComparer<byte>.Default);
-            hashCode = hashCode * -1521134295 +((IStructuralEquatable)MD5_BetTable).GetHashCode(EqualityComparer<byte>.Default);
-            hashCode = hashCode * -1521134295 +((IStructuralEquatable)MD5_HetTable).GetHashCode(EqualityComparer<byte>.Default);
-            hashCode = hashCode * -1521134295 +((IStructuralEquatable)MD5_MpqHeader).GetHashCode(EqualityComparer<byte>.Default);
+
+            // NOTE: not hashing arrays for performance consideration
+            //hashCode = hashCode * -1521134295 +((IStructuralEquatable)MD5_BlockTable).GetHashCode(EqualityComparer<byte>.Default);
+            //hashCode = hashCode * -1521134295 +((IStructuralEquatable)MD5_HashTable).GetHashCode(EqualityComparer<byte>.Default);
+            //hashCode = hashCode * -1521134295 +((IStructuralEquatable)MD5_HiBlockTable).GetHashCode(EqualityComparer<byte>.Default);
+            //hashCode = hashCode * -1521134295 +((IStructuralEquatable)MD5_BetTable).GetHashCode(EqualityComparer<byte>.Default);
+            //hashCode = hashCode * -1521134295 +((IStructuralEquatable)MD5_HetTable).GetHashCode(EqualityComparer<byte>.Default);
+            //hashCode = hashCode * -1521134295 +((IStructuralEquatable)MD5_MpqHeader).GetHashCode(EqualityComparer<byte>.Default);
             return hashCode;
         }
 
