@@ -29,8 +29,8 @@ namespace MPQNet.Definition
     /// <summary>
     /// Hash table entry. All files in the archive are searched by their hashes.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential, Pack =8)]
-    public class HashEntry : IEquatable<HashEntry>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct HashEntry : IEquatable<HashEntry>
     {
         /// <summary>
         /// The hash of the file path, using method A.
@@ -57,19 +57,42 @@ namespace MPQNet.Definition
         public byte Reserved { get; }
 
         /// <summary>
-        /// If the hash table entry is valid, this is the index into the block table of the file.
-        /// Otherwise, one of the following two values:
-        ///  - FFFFFFFFh: Hash table entry is empty, and has always been empty.
-        ///               Terminates searches for a given file.
-        ///  - FFFFFFFEh: Hash table entry is empty, but was valid at some point (a deleted file).
-        ///               Does not terminate searches for a given file.
+        /// Hash table entry is empty, and has always been empty.
+        /// Terminates searches for a given file.
         /// </summary>
-        public uint BlockIndex { get; }
+        public const int HASH_ENTRY_IS_EMPTY = unchecked((int)0xFFFFFFFF);
+
+        /// <summary>
+        /// Hash table entry is empty, but was valid at some point (a deleted file).
+        /// Does not terminate searches for a given file.
+        /// </summary>
+        public const int HASH_ENTRY_NO_LONGER_VALID = unchecked((int)0xFFFFFFFE);
+
+        /// <summary>
+        /// If the hash table entry is valid, this is the index into the block table of the file.
+        /// Otherwise, one of the values listed in remarks.
+        /// </summary>
+        /// <remarks>
+        /// Possible special values:
+        /// <see cref="HASH_ENTRY_IS_EMPTY"/>
+        /// <see cref="HASH_ENTRY_NO_LONGER_VALID"/>
+        /// </remarks>
+        public int BlockIndex { get; }
+
+        public HashEntry(uint name1, uint name2, ushort locale, byte platform, byte reserved, int blockIndex)
+        {
+            Name1 = name1;
+            Name2 = name2;
+            Locale = locale;
+            Platform = platform;
+            Reserved = reserved;
+            BlockIndex = blockIndex;
+        }
 
         #region Structural Equality
         public override bool Equals(object obj)
         {
-            return Equals(obj as HashEntry);
+            return (obj is HashEntry) && (Equals((HashEntry)(obj)));
         }
 
         public bool Equals(HashEntry other)

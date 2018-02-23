@@ -25,6 +25,27 @@ namespace MPQNet.UnitTests.StormLib
         /// </summary>
         public ulong FileSize => Data.FileSize;
 
+        private IReadOnlyList<HashEntry> _HashTable;
+
+        public IReadOnlyList<HashEntry> HashTable
+        {
+            get
+            {
+                if(null == _HashTable)
+                {
+                    var hashTable = new HashEntry[Header.HashTableEntriesCount];
+                    var pHashEntry = Data.pHashTable;
+                    for(int i = 0; i < hashTable.Length; ++i)
+                    {
+                        hashTable[i] = Marshal.PtrToStructure<HashEntry>(pHashEntry);
+                        pHashEntry += Marshal.SizeOf<HashEntry>();
+                    }
+                    _HashTable = hashTable;
+                }
+                return _HashTable;
+            }
+        }
+
         /// <summary>
         ///  MPQ user data. Valid only when ID_MPQ_USERDATA has been found
         /// </summary>

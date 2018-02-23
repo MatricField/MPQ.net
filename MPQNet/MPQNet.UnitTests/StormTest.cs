@@ -30,37 +30,53 @@ using MPQNet.UnitTests.StormLib;
 namespace MPQNet.UnitTests
 {
     [TestClass]
-    public class HeaderTest
+    public class StormTest
     {
         private const string replayPath = @"Replays\StandardBio.SC2Replay";
+
         [TestMethod]
         public void CanReadArchiveHeader()
         {
-            HeaderSearcher Searcher;
-            using (var stream = File.Open(replayPath, FileMode.Open, FileAccess.Read))
-            {
-                Searcher = new HeaderSearcher();
-                Searcher.Search(stream).Wait();
-            }
+            var MyArchive = new Archive(replayPath);
             using (var stormArchive = new StormArchive(replayPath))
             {
-                switch(Searcher.Header)
+                switch(stormArchive.Header.FormatVersion)
                 {
-                    case ArchiveHeader4 header:
-                        Assert.AreEqual(header, stormArchive.Header as ArchiveHeader4);
-                        break;
-                    case ArchiveHeader3 header:
-                        Assert.AreEqual(header, stormArchive.Header as ArchiveHeader3);
-                        break;
-                    case ArchiveHeader2 header:
-                        Assert.AreEqual(header, stormArchive.Header as ArchiveHeader2);
-                        break;
-                    case ArchiveHeader header:
-                        Assert.AreEqual(header, stormArchive.Header);
+                    case FormatVersions.V4:
+                        Assert.AreEqual(MyArchive.Header4, stormArchive.Header as ArchiveHeader4);
+                        goto case FormatVersions.V3;
+                    case FormatVersions.V3:
+                        Assert.AreEqual(MyArchive.Header3, stormArchive.Header as ArchiveHeader3);
+                        goto case FormatVersions.V2;
+                    case FormatVersions.V2:
+                        Assert.AreEqual(MyArchive.Header2, stormArchive.Header as ArchiveHeader2);
+                        goto case FormatVersions.V1;
+                    case FormatVersions.V1:
+                        Assert.AreEqual(MyArchive.Header, stormArchive.Header);
                         break;
                 }
                 
-                Assert.AreEqual(stormArchive.UserData, Searcher.UserDataHeader);
+                Assert.AreEqual(stormArchive.UserData, MyArchive.UserDataHeader);
+            }
+        }
+
+        [TestMethod]
+        public void CanLoadHashTable()
+        {
+            var myArchive = new Archive(replayPath);
+            using (var stormArchive = new StormArchive(replayPath))
+            {
+                try
+                {
+                    for (int i = 0; i < stormArchive.HashTable.Count; ++i)
+                    {
+                        Assert.AreEqual(stormArchive.HashTable[i], myArchive.HashTable[i], "hash entry not equal");
+                    }
+                }
+                catch(IndexOutOfRangeException)
+                {
+                    Assert.Fail("hash table size mismatch");
+                }
             }
         }
     }

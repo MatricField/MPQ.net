@@ -57,7 +57,7 @@ namespace MPQNet.UnitTests.StormLib
         /// <summary>
         ///  Hash table
         /// </summary>
-        public IntPtr _HashTable;
+        public IntPtr pHashTable { get; }
 
         /// <summary>
         ///  HET table

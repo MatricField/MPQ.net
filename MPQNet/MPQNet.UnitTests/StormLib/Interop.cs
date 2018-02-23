@@ -26,7 +26,7 @@ namespace MPQNet.UnitTests.StormLib
         {
             [DllImport(@"Lib\StormLibWin64.dll", CallingConvention = CallingConvention.Winapi)]
             public static extern bool SFileOpenArchive(
-                [MarshalAs(UnmanagedType.LPWStr)]string filename,
+                [MarshalAs(UnmanagedType.LPStr)]string filename,
                 uint prioerity,
                 uint openFlags,
                 out IntPtr phMPQ);

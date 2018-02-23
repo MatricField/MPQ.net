@@ -29,8 +29,8 @@ namespace MPQNet.Definition
     /// <summary>
     /// File description block contains informations about the file
     /// </summary>
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class BlockEntry : IEquatable<BlockEntry>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct BlockEntry : IEquatable<BlockEntry>
     {
         /// <summary>
         ///  Offset of the beginning of the file, relative to the beginning of the archive.
@@ -53,10 +53,18 @@ namespace MPQNet.Definition
         /// </summary>
         public MPQFileFlags Flags { get; }
 
+        public BlockEntry(uint filePos, uint compressedSize, uint fileSize, MPQFileFlags flags)
+        {
+            FilePos = filePos;
+            CompressedSize = compressedSize;
+            FileSize = fileSize;
+            Flags = flags;
+        }
+
         #region Structural Equality
         public override bool Equals(object obj)
         {
-            return Equals(obj as BlockEntry);
+            return (obj is BlockEntry) && (Equals((BlockEntry)(obj)));
         }
 
         public bool Equals(BlockEntry other)
@@ -86,7 +94,7 @@ namespace MPQNet.Definition
         public static bool operator !=(BlockEntry entry1, BlockEntry entry2)
         {
             return !(entry1 == entry2);
-        } 
+        }
         #endregion
     }
 }

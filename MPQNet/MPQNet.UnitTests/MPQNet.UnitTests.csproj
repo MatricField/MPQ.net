@@ -11,6 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Lib\StormLibWin32.dll" />
     <None Remove="StormLib\StormLibWin32.dll" />
   </ItemGroup>
 
@@ -31,10 +32,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Replays\StandardBio.SC2Replay">
+    <None Update="Lib\StormLibWin64.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Lib\StormLibWin64.dll">
+    <None Update="Replays\StandardBio.SC2Replay">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace MPQNet.Definition
@@ -29,6 +30,15 @@ namespace MPQNet.Definition
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public class ArchiveHeader2 : ArchiveHeader, IEquatable<ArchiveHeader2>
     {
+        /// <summary>
+        /// Combine high bits and low bits of offset data
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected static ulong MakeOffset64(ulong hightBits, uint lowBits)
+        {
+            return hightBits << 32 | lowBits;
+        }
+
         /// <summary>
         /// Offset to the beginning of array of 16-bit high parts of file offsets.
         /// </summary>
@@ -40,9 +50,19 @@ namespace MPQNet.Definition
         public ushort HashTableOffsetHigh { get; }
 
         /// <summary>
+        /// Combined hash table offset for large archives.
+        /// </summary>
+        public ulong HashTableOffsetCombined => MakeOffset64(HashTableOffsetHigh, HashTableOffset);
+
+        /// <summary>
         /// High 16 bits of the block table offset for large archives.
         /// </summary>
         public ushort BlockTableOffsetHigh { get; }
+
+        /// <summary>
+        /// Combined block table offset for large archives.
+        /// </summary>
+        public ulong BlockTableOffsetCombined => MakeOffset64(BlockTableOffsetHigh, BlockTableOffset);
 
         #region Structural Equality
         public override bool Equals(object obj)
