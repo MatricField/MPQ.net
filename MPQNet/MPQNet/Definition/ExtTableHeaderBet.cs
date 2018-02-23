@@ -24,7 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-namespace MPQNet.Header
+namespace MPQNet.Definition
 {
     /// <summary>
     /// Structure for BET table header

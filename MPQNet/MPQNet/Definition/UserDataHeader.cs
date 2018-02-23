@@ -24,7 +24,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 
-namespace MPQNet.Header
+namespace MPQNet.Definition
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public class UserDataHeader : HeaderCommon, IEquatable<UserDataHeader>

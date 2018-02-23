@@ -24,12 +24,12 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-namespace MPQNet.Header
+namespace MPQNet.Definition
 {
     /// <summary>
     /// Hash table entry. All files in the archive are searched by their hashes.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    [StructLayout(LayoutKind.Sequential, Pack =8)]
     public class HashEntry : IEquatable<HashEntry>
     {
         /// <summary>

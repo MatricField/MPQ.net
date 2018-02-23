@@ -24,68 +24,55 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-namespace MPQNet.Header
+namespace MPQNet.Definition
 {
     /// <summary>
-    /// File description block contains informations about the file
+    /// Common header for HET and BET tables
     /// </summary>
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class BlockEntry : IEquatable<BlockEntry>
+    public class ExtTableHeaderCommon : HeaderCommon, IEquatable<ExtTableHeaderCommon>
     {
         /// <summary>
-        ///  Offset of the beginning of the file, relative to the beginning of the archive.
+        /// Version. Seems to be always 1
         /// </summary>
-        public uint FilePos { get; }
+        public uint Version { get; }
 
         /// <summary>
-        /// Compressed file size
+        /// Size of the contained table
         /// </summary>
-        public uint CompressedSize { get; }
-
-        /// <summary>
-        /// Only valid if the block is a file; otherwise meaningless, and should be 0.
-        /// If the file is compressed, this is the size of the uncompressed file data.
-        /// </summary>
-        public uint FileSize { get; }
-
-        /// <summary>
-        /// Flags for the file.
-        /// </summary>
-        public MPQFileFlags Flags { get; }
+        public uint DataSize { get; }
 
         #region Structural Equality
         public override bool Equals(object obj)
         {
-            return Equals(obj as BlockEntry);
+            return Equals(obj as ExtTableHeaderCommon);
         }
 
-        public bool Equals(BlockEntry other)
+        public bool Equals(ExtTableHeaderCommon other)
         {
             return other != null &&
-                   FilePos == other.FilePos &&
-                   CompressedSize == other.CompressedSize &&
-                   FileSize == other.FileSize &&
-                   Flags == other.Flags;
+                   base.Equals(other) &&
+                   Version == other.Version &&
+                   DataSize == other.DataSize;
         }
 
         public override int GetHashCode()
         {
-            var hashCode = -1133767338;
-            hashCode = hashCode * -1521134295 + FilePos.GetHashCode();
-            hashCode = hashCode * -1521134295 + CompressedSize.GetHashCode();
-            hashCode = hashCode * -1521134295 + FileSize.GetHashCode();
-            hashCode = hashCode * -1521134295 + Flags.GetHashCode();
+            var hashCode = -184249525;
+            hashCode = hashCode * -1521134295 + base.GetHashCode();
+            hashCode = hashCode * -1521134295 + Version.GetHashCode();
+            hashCode = hashCode * -1521134295 + DataSize.GetHashCode();
             return hashCode;
         }
 
-        public static bool operator ==(BlockEntry entry1, BlockEntry entry2)
+        public static bool operator ==(ExtTableHeaderCommon common1, ExtTableHeaderCommon common2)
         {
-            return EqualityComparer<BlockEntry>.Default.Equals(entry1, entry2);
+            return EqualityComparer<ExtTableHeaderCommon>.Default.Equals(common1, common2);
         }
 
-        public static bool operator !=(BlockEntry entry1, BlockEntry entry2)
+        public static bool operator !=(ExtTableHeaderCommon common1, ExtTableHeaderCommon common2)
         {
-            return !(entry1 == entry2);
+            return !(common1 == common2);
         } 
         #endregion
     }

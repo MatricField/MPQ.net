@@ -23,7 +23,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using MPQNet.Header;
+using MPQNet.Definition;
 using MPQNet.Helper;
 
 namespace MPQNet

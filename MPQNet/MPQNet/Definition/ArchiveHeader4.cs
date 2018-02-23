@@ -26,7 +26,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-namespace MPQNet.Header
+namespace MPQNet.Definition
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public class ArchiveHeader4 : ArchiveHeader3, IEquatable<ArchiveHeader4>

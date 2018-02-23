@@ -24,60 +24,69 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-namespace MPQNet.Header
+namespace MPQNet.Definition
 {
+    /// <summary>
+    /// File description block contains informations about the file
+    /// </summary>
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class ArchiveHeader2 : ArchiveHeader, IEquatable<ArchiveHeader2>
+    public class BlockEntry : IEquatable<BlockEntry>
     {
         /// <summary>
-        /// Offset to the beginning of array of 16-bit high parts of file offsets.
+        ///  Offset of the beginning of the file, relative to the beginning of the archive.
         /// </summary>
-        public ulong ExtendedBlockTableOffset { get; }
+        public uint FilePos { get; }
 
         /// <summary>
-        /// High 16 bits of the hash table offset for large archives.
+        /// Compressed file size
         /// </summary>
-        public ushort HashTableOffsetHigh { get; }
+        public uint CompressedSize { get; }
 
         /// <summary>
-        /// High 16 bits of the block table offset for large archives.
+        /// Only valid if the block is a file; otherwise meaningless, and should be 0.
+        /// If the file is compressed, this is the size of the uncompressed file data.
         /// </summary>
-        public ushort BlockTableOffsetHigh { get; }
+        public uint FileSize { get; }
+
+        /// <summary>
+        /// Flags for the file.
+        /// </summary>
+        public MPQFileFlags Flags { get; }
 
         #region Structural Equality
         public override bool Equals(object obj)
         {
-            return Equals(obj as ArchiveHeader2);
+            return Equals(obj as BlockEntry);
         }
 
-        public bool Equals(ArchiveHeader2 other)
+        public bool Equals(BlockEntry other)
         {
             return other != null &&
-                   base.Equals(other) &&
-                   ExtendedBlockTableOffset == other.ExtendedBlockTableOffset &&
-                   HashTableOffsetHigh == other.HashTableOffsetHigh &&
-                   BlockTableOffsetHigh == other.BlockTableOffsetHigh;
+                   FilePos == other.FilePos &&
+                   CompressedSize == other.CompressedSize &&
+                   FileSize == other.FileSize &&
+                   Flags == other.Flags;
         }
 
         public override int GetHashCode()
         {
-            var hashCode = 445357405;
-            hashCode = hashCode * -1521134295 + base.GetHashCode();
-            hashCode = hashCode * -1521134295 + ExtendedBlockTableOffset.GetHashCode();
-            hashCode = hashCode * -1521134295 + HashTableOffsetHigh.GetHashCode();
-            hashCode = hashCode * -1521134295 + BlockTableOffsetHigh.GetHashCode();
+            var hashCode = -1133767338;
+            hashCode = hashCode * -1521134295 + FilePos.GetHashCode();
+            hashCode = hashCode * -1521134295 + CompressedSize.GetHashCode();
+            hashCode = hashCode * -1521134295 + FileSize.GetHashCode();
+            hashCode = hashCode * -1521134295 + Flags.GetHashCode();
             return hashCode;
         }
 
-        public static bool operator ==(ArchiveHeader2 header1, ArchiveHeader2 header2)
+        public static bool operator ==(BlockEntry entry1, BlockEntry entry2)
         {
-            return EqualityComparer<ArchiveHeader2>.Default.Equals(header1, header2);
+            return EqualityComparer<BlockEntry>.Default.Equals(entry1, entry2);
         }
 
-        public static bool operator !=(ArchiveHeader2 header1, ArchiveHeader2 header2)
+        public static bool operator !=(BlockEntry entry1, BlockEntry entry2)
         {
-            return !(header1 == header2);
-        }
+            return !(entry1 == entry2);
+        } 
         #endregion
     }
 }

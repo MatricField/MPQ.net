@@ -288,3 +288,4 @@ __pycache__/
 *.xsd.cs
 /MPQNet.Test/MPQNet.Test
 /MPQNet.Test
+/MPQNet/MPQNet.UnitTests/Lib

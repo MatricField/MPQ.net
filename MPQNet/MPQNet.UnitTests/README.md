@@ -1,11 +1,18 @@
 ﻿# Unit Tests for MPQ.net
 
+Test against StormLib
+
 ## Reference
 
-[MPYQ project](https://github.com/eagleflo/mpyq)
+[StormLib v9.22](https://github.com/ladislav-zezula/StormLib)
 
 #### Note
 
-1. pip is not quite working for IronPython. The current work around is to include the source code in the project.
+Please build StormLib.dll from source code to run the tests.
 
-2. IronPython currently not available on .net core, so the unit test is only available as .net framework project. If you are building this project on other platforms, just exclude the unit test project in the build.
+Put the compiled binary under the output directory:
+
+   Windows x86    : \Lib\StormLibWin32.dll
+   Windows x86-64 : \Lib\StormLibWin64.dll
+
+Currently only windows binding is implemented.

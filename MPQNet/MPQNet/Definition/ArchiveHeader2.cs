@@ -24,60 +24,60 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-namespace MPQNet.Header
+namespace MPQNet.Definition
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class ArchiveHeader3 : ArchiveHeader2, IEquatable<ArchiveHeader3>
+    public class ArchiveHeader2 : ArchiveHeader, IEquatable<ArchiveHeader2>
     {
         /// <summary>
-        /// 64-bit version of the archive size
+        /// Offset to the beginning of array of 16-bit high parts of file offsets.
         /// </summary>
-        public ulong ArchiveSize64 { get; }
+        public ulong ExtendedBlockTableOffset { get; }
 
         /// <summary>
-        /// 64-bit position of the BET table
+        /// High 16 bits of the hash table offset for large archives.
         /// </summary>
-        public ulong BetTableOffset { get; }
+        public ushort HashTableOffsetHigh { get; }
 
         /// <summary>
-        /// 64-bit position of the HET table
+        /// High 16 bits of the block table offset for large archives.
         /// </summary>
-        public ulong HetTableOffset { get; }
+        public ushort BlockTableOffsetHigh { get; }
 
         #region Structural Equality
         public override bool Equals(object obj)
         {
-            return Equals(obj as ArchiveHeader3);
+            return Equals(obj as ArchiveHeader2);
         }
 
-        public bool Equals(ArchiveHeader3 other)
+        public bool Equals(ArchiveHeader2 other)
         {
             return other != null &&
                    base.Equals(other) &&
-                   ArchiveSize64 == other.ArchiveSize64 &&
-                   BetTableOffset == other.BetTableOffset &&
-                   HetTableOffset == other.HetTableOffset;
+                   ExtendedBlockTableOffset == other.ExtendedBlockTableOffset &&
+                   HashTableOffsetHigh == other.HashTableOffsetHigh &&
+                   BlockTableOffsetHigh == other.BlockTableOffsetHigh;
         }
 
         public override int GetHashCode()
         {
-            var hashCode = 2113465942;
+            var hashCode = 445357405;
             hashCode = hashCode * -1521134295 + base.GetHashCode();
-            hashCode = hashCode * -1521134295 + ArchiveSize64.GetHashCode();
-            hashCode = hashCode * -1521134295 + BetTableOffset.GetHashCode();
-            hashCode = hashCode * -1521134295 + HetTableOffset.GetHashCode();
+            hashCode = hashCode * -1521134295 + ExtendedBlockTableOffset.GetHashCode();
+            hashCode = hashCode * -1521134295 + HashTableOffsetHigh.GetHashCode();
+            hashCode = hashCode * -1521134295 + BlockTableOffsetHigh.GetHashCode();
             return hashCode;
         }
 
-        public static bool operator ==(ArchiveHeader3 header1, ArchiveHeader3 header2)
+        public static bool operator ==(ArchiveHeader2 header1, ArchiveHeader2 header2)
         {
-            return EqualityComparer<ArchiveHeader3>.Default.Equals(header1, header2);
+            return EqualityComparer<ArchiveHeader2>.Default.Equals(header1, header2);
         }
 
-        public static bool operator !=(ArchiveHeader3 header1, ArchiveHeader3 header2)
+        public static bool operator !=(ArchiveHeader2 header1, ArchiveHeader2 header2)
         {
             return !(header1 == header2);
-        } 
+        }
         #endregion
     }
 }

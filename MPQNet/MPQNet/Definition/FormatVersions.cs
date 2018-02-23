@@ -20,49 +20,31 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-
-namespace MPQNet.Header
+namespace MPQNet.Definition
 {
     /// <summary>
-    /// Common fields for all headers
+    /// Supported versions of MPQ Format
     /// </summary>
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public abstract class HeaderCommon : IEquatable<HeaderCommon>
+    public enum FormatVersions : ushort
     {
         /// <summary>
-        /// Indicates that the file is a MoPaQ archive.
+        /// Used up to The Burning Crusade
         /// </summary>
-        public Signatures ID { get; }
+        V1 = 0,
 
-        #region Structural Equality
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as HeaderCommon);
-        }
+        /// <summary>
+        /// The Burning Crusade and newer
+        /// </summary>
+        V2 = 1,
 
-        public bool Equals(HeaderCommon other)
-        {
-            return other != null &&
-                   ID == other.ID;
-        }
+        /// <summary>
+        /// WoW - Cataclysm beta or newer
+        /// </summary>
+        V3 = 2,
 
-        public override int GetHashCode()
-        {
-            return 1213502048 + ID.GetHashCode();
-        }
-
-        public static bool operator ==(HeaderCommon common1, HeaderCommon common2)
-        {
-            return EqualityComparer<HeaderCommon>.Default.Equals(common1, common2);
-        }
-
-        public static bool operator !=(HeaderCommon common1, HeaderCommon common2)
-        {
-            return !(common1 == common2);
-        }
-        #endregion
+        /// <summary>
+        /// WoW - Cataclysm beta or newer
+        /// </summary>
+        V4 = 3,
     }
 }

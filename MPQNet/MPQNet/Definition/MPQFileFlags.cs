@@ -22,7 +22,7 @@
 
 using System;
 
-namespace MPQNet.Header
+namespace MPQNet.Definition
 {
     [Flags]
     public enum MPQFileFlags : uint

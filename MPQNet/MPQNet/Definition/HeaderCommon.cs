@@ -20,36 +20,49 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-namespace MPQNet.Header
+using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+
+namespace MPQNet.Definition
 {
     /// <summary>
-    /// Header signatures of MPQ headers
+    /// Common fields for all headers
     /// </summary>
-    public enum Signatures : uint
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public abstract class HeaderCommon : IEquatable<HeaderCommon>
     {
         /// <summary>
-        /// MPQ archive header ID ('MPQ\x1A')
+        /// Indicates that the file is a MoPaQ archive.
         /// </summary>
-        MPQ = 0x1A51504D,
+        public Signatures ID { get; }
 
-        /// <summary>
-        /// MPQ userdata entry ('MPQ\x1B')
-        /// </summary>
-        MPQ_UserData = 0x1B51504D,
+        #region Structural Equality
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as HeaderCommon);
+        }
 
-        /// <summary>
-        /// MPK archive header ID ('MPK\x1A')
-        /// </summary>
-        MPK = 0x1A4B504D,
+        public bool Equals(HeaderCommon other)
+        {
+            return other != null &&
+                   ID == other.ID;
+        }
 
-        /// <summary>
-        /// Header of HET table. ('HET\x1a')
-        /// </summary>
-        HET = 0x1A544548,
+        public override int GetHashCode()
+        {
+            return 1213502048 + ID.GetHashCode();
+        }
 
-        /// <summary>
-        /// Header of BET table. ('BET\x1a')
-        /// </summary>
-        BET = 0x1A544542,
+        public static bool operator ==(HeaderCommon common1, HeaderCommon common2)
+        {
+            return EqualityComparer<HeaderCommon>.Default.Equals(common1, common2);
+        }
+
+        public static bool operator !=(HeaderCommon common1, HeaderCommon common2)
+        {
+            return !(common1 == common2);
+        }
+        #endregion
     }
 }

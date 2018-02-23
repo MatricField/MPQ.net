@@ -24,55 +24,59 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-namespace MPQNet.Header
+namespace MPQNet.Definition
 {
-    /// <summary>
-    /// Common header for HET and BET tables
-    /// </summary>
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class ExtTableHeaderCommon : HeaderCommon, IEquatable<ExtTableHeaderCommon>
+    public class ArchiveHeader3 : ArchiveHeader2, IEquatable<ArchiveHeader3>
     {
         /// <summary>
-        /// Version. Seems to be always 1
+        /// 64-bit version of the archive size
         /// </summary>
-        public uint Version { get; }
+        public ulong ArchiveSize64 { get; }
 
         /// <summary>
-        /// Size of the contained table
+        /// 64-bit position of the BET table
         /// </summary>
-        public uint DataSize { get; }
+        public ulong BetTableOffset { get; }
+
+        /// <summary>
+        /// 64-bit position of the HET table
+        /// </summary>
+        public ulong HetTableOffset { get; }
 
         #region Structural Equality
         public override bool Equals(object obj)
         {
-            return Equals(obj as ExtTableHeaderCommon);
+            return Equals(obj as ArchiveHeader3);
         }
 
-        public bool Equals(ExtTableHeaderCommon other)
+        public bool Equals(ArchiveHeader3 other)
         {
             return other != null &&
                    base.Equals(other) &&
-                   Version == other.Version &&
-                   DataSize == other.DataSize;
+                   ArchiveSize64 == other.ArchiveSize64 &&
+                   BetTableOffset == other.BetTableOffset &&
+                   HetTableOffset == other.HetTableOffset;
         }
 
         public override int GetHashCode()
         {
-            var hashCode = -184249525;
+            var hashCode = 2113465942;
             hashCode = hashCode * -1521134295 + base.GetHashCode();
-            hashCode = hashCode * -1521134295 + Version.GetHashCode();
-            hashCode = hashCode * -1521134295 + DataSize.GetHashCode();
+            hashCode = hashCode * -1521134295 + ArchiveSize64.GetHashCode();
+            hashCode = hashCode * -1521134295 + BetTableOffset.GetHashCode();
+            hashCode = hashCode * -1521134295 + HetTableOffset.GetHashCode();
             return hashCode;
         }
 
-        public static bool operator ==(ExtTableHeaderCommon common1, ExtTableHeaderCommon common2)
+        public static bool operator ==(ArchiveHeader3 header1, ArchiveHeader3 header2)
         {
-            return EqualityComparer<ExtTableHeaderCommon>.Default.Equals(common1, common2);
+            return EqualityComparer<ArchiveHeader3>.Default.Equals(header1, header2);
         }
 
-        public static bool operator !=(ExtTableHeaderCommon common1, ExtTableHeaderCommon common2)
+        public static bool operator !=(ArchiveHeader3 header1, ArchiveHeader3 header2)
         {
-            return !(common1 == common2);
+            return !(header1 == header2);
         } 
         #endregion
     }
