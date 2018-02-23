@@ -44,7 +44,22 @@ namespace MPQNet.UnitTests
             }
             using (var stormArchive = new StormArchive(replayPath))
             {
-                Assert.AreEqual(stormArchive.Header, Searcher.Header);
+                switch(Searcher.Header)
+                {
+                    case ArchiveHeader4 header:
+                        Assert.AreEqual(header, stormArchive.Header as ArchiveHeader4);
+                        break;
+                    case ArchiveHeader3 header:
+                        Assert.AreEqual(header, stormArchive.Header as ArchiveHeader3);
+                        break;
+                    case ArchiveHeader2 header:
+                        Assert.AreEqual(header, stormArchive.Header as ArchiveHeader2);
+                        break;
+                    case ArchiveHeader header:
+                        Assert.AreEqual(header, stormArchive.Header);
+                        break;
+                }
+                
                 Assert.AreEqual(stormArchive.UserData, Searcher.UserDataHeader);
             }
         }
