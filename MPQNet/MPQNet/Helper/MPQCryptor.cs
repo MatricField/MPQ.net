@@ -52,14 +52,14 @@ namespace MPQNet.Helper
         /// various game versions and localizations. Even WorldEdit, after importing a file
         /// with Korean characters in the name, cannot open the file back.
         /// </remarks>
-        public static uint HashString(string str, HashType hashKey)
+        public static uint HashString(string str, uint hashKey)
         {
             uint seed1 = 0x7FED7FED;
             uint seed2 = 0xEEEEEEEE;
             foreach(var chRaw in str)
             {
                 var ch = '/' == chRaw ? '\\' : char.ToUpper(chRaw);
-                seed1 = CryptTable[((uint)hashKey * 0x100) + ch] ^ (seed1 + seed2);
+                seed1 = CryptTable[hashKey * 0x100 + ch] ^ (seed1 + seed2);
                 seed2 = ch + seed1 + seed2 + (seed2 << 5) + 3;
             }
             return seed1;
@@ -68,14 +68,14 @@ namespace MPQNet.Helper
         /// <summary>
         /// Hash a string. NOT convertint slash (0x2F) to backslash (0x5C).
         /// </summary>
-        public static uint HashStringSlash(string str, HashType hashKey)
+        public static uint HashStringSlash(string str, uint hashKey)
         {
             uint seed1 = 0x7FED7FED;
             uint seed2 = 0xEEEEEEEE;
             foreach (var chRaw in str)
             {
                 var ch = char.ToUpper(chRaw);
-                seed1 = CryptTable[((uint)hashKey * 0x100) + ch] ^ (seed1 + seed2);
+                seed1 = CryptTable[hashKey * 0x100 + ch] ^ (seed1 + seed2);
                 seed2 = ch + seed1 + seed2 + (seed2 << 5) + 3;
             }
             return seed1;
@@ -90,7 +90,7 @@ namespace MPQNet.Helper
             {
                 for (; ; )
                 {
-                    seed += CryptTable[((uint)HashType.Key2Mix * 0x100) + (key & 0xFF)];
+                    seed += CryptTable[HashType.Key2Mix * 0x100 + (key & 0xFF)];
                     var decrypted = reader.ReadUInt32() ^ (key + seed);  
                     key = ((~key << 0x15) + 0x11111111) | (key >> 0x0B);
                     seed = decrypted + seed + (seed << 5) + 3;
