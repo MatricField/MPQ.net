@@ -34,7 +34,7 @@ namespace MPQNet.Definition
         /// Combine high bits and low bits of offset data
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static ulong MakeOffset64(ulong hightBits, uint lowBits)
+        protected static long MakeOffset64(long hightBits, uint lowBits)
         {
             return hightBits << 32 | lowBits;
         }
@@ -47,22 +47,16 @@ namespace MPQNet.Definition
         /// <summary>
         /// High 16 bits of the hash table offset for large archives.
         /// </summary>
-        public ushort HashTableOffsetHigh { get; }
+        private readonly ushort HashTableOffsetHigh;
 
-        /// <summary>
-        /// Combined hash table offset for large archives.
-        /// </summary>
-        public ulong HashTableOffsetCombined => MakeOffset64(HashTableOffsetHigh, HashTableOffset);
+        public override long HashTableOffset => MakeOffset64(HashTableOffsetHigh, (uint)base.HashTableOffset);
 
         /// <summary>
         /// High 16 bits of the block table offset for large archives.
         /// </summary>
-        public ushort BlockTableOffsetHigh { get; }
+        private readonly ushort BlockTableOffsetHigh;
 
-        /// <summary>
-        /// Combined block table offset for large archives.
-        /// </summary>
-        public ulong BlockTableOffsetCombined => MakeOffset64(BlockTableOffsetHigh, BlockTableOffset);
+        public override long BlockTableOffset => MakeOffset64(BlockTableOffsetHigh, (uint)base.BlockTableOffset);
 
         #region Structural Equality
         public override bool Equals(object obj)

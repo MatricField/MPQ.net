@@ -27,6 +27,8 @@ namespace MPQNet.Definition
     public static class TableInfo
     {
         public const string HashTableName = "(hash table)";
-        public static readonly uint HashKey = MPQCryptor.HashString(HashTableName, HashType.FileKey);
+        public static readonly uint HashTableKey = MPQCryptor.HashString(HashTableName, HashType.FileKey);
+        public const string BlockTableName = "(block table)";
+        public static readonly uint BlockTableKey = MPQCryptor.HashString(BlockTableName, HashType.FileKey);
     }
 }

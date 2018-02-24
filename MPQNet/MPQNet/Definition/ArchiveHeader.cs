@@ -32,7 +32,7 @@ namespace MPQNet.Definition
         /// <summary>
         /// Size of the archive header.
         /// </summary>
-        public uint HeaderSize { get; }
+        public virtual uint HeaderSize { get; }
 
         /// <summary>
         /// Size of the whole archive, including the header.
@@ -45,12 +45,12 @@ namespace MPQNet.Definition
         /// as the size from the beginning of the archive to the end 
         /// of the hash table, block table, or extended block table(whichever is largest).
         /// </summary>
-        public uint ArchiveSize { get; }
+        public virtual uint ArchiveSize { get; }
 
         /// <summary>
         /// MoPaQ format version.
         /// </summary>
-        public FormatVersions FormatVersion { get; }
+        public virtual FormatVersions FormatVersion { get; }
 
         /// <summary>
         /// Power of two exponent specifying the number of 512-byte 
@@ -58,29 +58,33 @@ namespace MPQNet.Definition
         /// The size of each logical sector in the archive is
         /// 512 * 2^SectorSizeShift.
         /// </summary>
-        public ushort SectorSizeShift { get; }
+        public virtual ushort SectorSizeShift { get; }
+
+        private readonly uint _HashTableOffset;
 
         /// <summary>
         /// Offset to the beginning of the hash table,
         /// relative to the beginning of the archive.
         /// </summary>
-        public uint HashTableOffset { get; }
+        public virtual long HashTableOffset => _HashTableOffset;
+
+        private readonly uint _BlockTableOffset;
 
         /// <summary>
         /// Offset to the beginning of the block table,
         /// relative to the beginning of the archive.
         /// </summary>
-        public uint BlockTableOffset { get; }
+        public virtual long BlockTableOffset => _BlockTableOffset;
 
         /// <summary>
         /// Number of entries in the hash table.
         /// </summary>
-        public uint HashTableEntriesCount { get; }
+        public virtual uint HashTableEntriesCount { get; }
 
         /// <summary>
         /// Number of entries in the block table.
         /// </summary>
-        public uint BlockTableEntriesCount { get; }
+        public virtual uint BlockTableEntriesCount { get; }
 
         #region Structural Equality
         public override bool Equals(object obj)

@@ -43,97 +43,63 @@ namespace MPQNet
 
         public ArchiveHeader Header { get; protected set; }
 
-        public ArchiveHeader2 Header2 { get; protected set; }
-        public ArchiveHeader3 Header3 { get; protected set; }
-        public ArchiveHeader4 Header4 { get; protected set; }
-
         public IReadOnlyList<HashEntry> HashTable { get; protected set; }
         public IReadOnlyList<BlockEntry> BlockTable { get; protected set; }
 
-        public static async Task<Archive> Create(string path)
-        {
-            var result = new Archive();
-            result.ArchiveFile = new FileInfo(path);
-            using (var stream = result.ArchiveFile.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                await result.ReadHeaderAsync(stream);
-                throw new NotImplementedException();
-            }
-            return result;
-        }
-
-        protected Archive()
+        public Archive()
         {
 
         }
 
         public Archive(string path)
         {
-            ArchiveFile = new FileInfo(path);
-            using (var stream = ArchiveFile.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                ReadHeader(stream);
-                LoadHashTable(stream);
-            }
-        }
-
-        protected virtual void ReadHeader(Stream stream)
-        {
             try
             {
-                var task = ReadHeaderAsync(stream);
+                var task = Init(path);
                 task.Wait();
             }
-            catch(AggregateException ex)
+            catch (AggregateException ex)
             {
                 ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
             }
         }
 
-        protected virtual async Task ReadHeaderAsync(Stream stream)
+        public async Task Init(string path)
+        {
+            ArchiveFile = new FileInfo(path);
+            using (var stream = ArchiveFile.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                await LoadHeaderAsync(stream);
+                await LoadHashTableAsync(stream);
+                await LoadBlockTableAsync(stream);
+            }
+        }
+
+        protected virtual async Task LoadHeaderAsync(Stream stream)
         {
             var inputReader = new BinaryReader(stream);
             try
             {
-                for (; ; )
+                for (; null == Header ; )
                 {
                     var headerSignature = (Signatures)inputReader.ReadUInt32();
+                    stream.Seek(-sizeof(Signatures), SeekOrigin.Current);
                     switch (headerSignature)
                     {
                         case Signatures.MPQ_UserData:
-                            stream.Seek(-sizeof(Signatures), SeekOrigin.Current);
                             var userDataHeaderOffset = stream.Position;
                             UserDataHeader = await stream.MarshalObjectFromStreamAsync<UserDataHeader>();
-                            stream.Seek(userDataHeaderOffset, SeekOrigin.Begin);
-                            stream.Seek(UserDataHeader.HeaderOffset, SeekOrigin.Current);
+                            stream.Seek(userDataHeaderOffset + UserDataHeader.HeaderOffset, SeekOrigin.Begin);
                             break;
                         case Signatures.MPQ:
-                        case Signatures.MPK:
-                            stream.Seek(-sizeof(Signatures), SeekOrigin.Current);
                             ArchiveOffset = stream.Position;
                             stream.Seek(FORMAT_VERSION_OFFSET, SeekOrigin.Current);
                             var formatVersion = (FormatVersions)inputReader.ReadUInt16();
                             stream.Seek(-FORMAT_VERSION_OFFSET - sizeof(FormatVersions), SeekOrigin.Current);
-                            switch (formatVersion)
-                            {
-                                case FormatVersions.V1:
-                                    Header = await stream.MarshalObjectFromStreamAsync<ArchiveHeader>();
-                                    break;
-                                case FormatVersions.V2:
-                                    Header = Header2 = await stream.MarshalObjectFromStreamAsync<ArchiveHeader2>();
-                                    break;
-                                case FormatVersions.V3:
-                                    Header = Header2 = Header3 = await stream.MarshalObjectFromStreamAsync<ArchiveHeader3>();
-                                    break;
-                                case FormatVersions.V4:
-                                    Header = Header2 = Header3 = Header4 = await stream.MarshalObjectFromStreamAsync<ArchiveHeader4>();
-                                    break;
-                                default:
-                                    throw new NotSupportedException("NotSupported format version");
-                            }
-                            return;
+                            await ReadMPQHeaderAsync(formatVersion, inputReader);
+                            break;
                         default:
-                            stream.Seek(0x200 - sizeof(Signatures), SeekOrigin.Current);
+                            stream.Seek(0x200, SeekOrigin.Current);
                             break;
                     }
                 }
@@ -144,24 +110,47 @@ namespace MPQNet
             }
         }
 
-        protected virtual void LoadHashTable(Stream stream)
+        protected virtual async Task ReadMPQHeaderAsync(FormatVersions version, BinaryReader inputReader)
+        {
+            var stream = inputReader.BaseStream;
+            switch (version)
+            {
+                case FormatVersions.V1:
+                    Header = await stream.MarshalObjectFromStreamAsync<ArchiveHeader>();
+                    break;
+                default:
+                    throw new NotSupportedException("NotSupported format version");
+            }
+        }
+
+        protected virtual async Task LoadHashTableAsync(Stream stream)
         {
             stream.Seek(ArchiveOffset + Header.HashTableOffset, SeekOrigin.Begin);
             var data = new byte[Header.HashTableEntriesCount * Marshal.SizeOf<HashEntry>()];
             stream.Read(data, 0, data.Length);
-            MPQCryptor.DecryptDataInplace(data, TableInfo.HashKey);
+            MPQCryptor.DecryptDataInplace(data, TableInfo.HashTableKey);
             var memstream = new MemoryStream(data);
-            var hashTable = new List<HashEntry>();
+            var hashTable = new HashEntry[Header.HashTableEntriesCount];
             for (int i = 0; i < Header.HashTableEntriesCount; ++i)
             {
-                hashTable.Add(memstream.MarshalObjectFromStream<HashEntry>());
+                hashTable[i] = await memstream.MarshalObjectFromStreamAsync<HashEntry>();
             }
             HashTable = hashTable;
         }
 
-        protected virtual void LoadBlockTable(Stream stream)
+        protected virtual async Task LoadBlockTableAsync(Stream stream)
         {
-            throw new NotImplementedException();
+            stream.Seek(ArchiveOffset + Header.BlockTableOffset, SeekOrigin.Begin);
+            var data = new byte[Header.BlockTableEntriesCount * Marshal.SizeOf<BlockEntry>()];
+            stream.Read(data, 0, data.Length);
+            MPQCryptor.DecryptDataInplace(data, TableInfo.BlockTableKey);
+            var memstream = new MemoryStream(data);
+            var blockTable = new BlockEntry[Header.BlockTableEntriesCount];
+            for (int i = 0; i < Header.BlockTableEntriesCount; ++i)
+            {
+                blockTable[i] = await memstream.MarshalObjectFromStreamAsync<BlockEntry>();
+            }
+            BlockTable = blockTable;
         }
 
 

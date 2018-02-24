@@ -37,7 +37,7 @@ namespace MPQNet.UnitTests
         [TestMethod]
         public void CanReadArchiveHeader()
         {
-            var MyArchive = new Archive(replayPath);
+            var MyArchive = new Archive4(replayPath);
             using (var stormArchive = new StormArchive(replayPath))
             {
                 switch(stormArchive.Header.FormatVersion)
@@ -63,7 +63,7 @@ namespace MPQNet.UnitTests
         [TestMethod]
         public void CanLoadHashTable()
         {
-            var myArchive = new Archive(replayPath);
+            var myArchive = new Archive4(replayPath);
             using (var stormArchive = new StormArchive(replayPath))
             {
                 try
