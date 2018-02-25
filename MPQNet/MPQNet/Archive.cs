@@ -126,21 +126,21 @@ namespace MPQNet
         protected virtual async Task LoadHashTableAsync(Stream stream)
         {
             stream.Seek(ArchiveOffset + Header.HashTableOffset, SeekOrigin.Begin);
-            var data = new byte[Header.HashTableEntriesCount * Marshal.SizeOf<HashEntry>()];
-            await stream.ReadAsync(data, 0, data.Length);
-            MPQCryptor.DecryptDataInplace(data, TableInfo.HashTableKey);
-            HashTable = data.MarshalArrayFromBuffer<HashEntry>((int)Header.HashTableEntriesCount);
+            HashTable = await ReadTableAsync<HashEntry>(stream, (int)Header.HashTableEntriesCount, TableInfo.HashTableKey);
         }
 
         protected virtual async Task LoadBlockTableAsync(Stream stream)
         {
             stream.Seek(ArchiveOffset + Header.BlockTableOffset, SeekOrigin.Begin);
-            var data = new byte[Header.BlockTableEntriesCount * Marshal.SizeOf<BlockEntry>()];
-            await stream.ReadAsync(data, 0, data.Length);
-            MPQCryptor.DecryptDataInplace(data, TableInfo.BlockTableKey);
-            BlockTable = data.MarshalArrayFromBuffer<BlockEntry>((int)Header.BlockTableEntriesCount);
+            BlockTable = await ReadTableAsync<BlockEntry>(stream, (int)Header.BlockTableEntriesCount, TableInfo.BlockTableKey);
         }
 
-
+        private async Task<T[]> ReadTableAsync<T>(Stream stream, int count, uint key)
+        {
+            var data = new byte[count * Marshal.SizeOf<T>()];
+            await stream.ReadAsync(data, 0, data.Length);
+            MPQCryptor.DecryptDataInplace(data, key);
+            return data.MarshalArrayFromBuffer<T>(count);
+        }
     }
 }
