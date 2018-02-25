@@ -31,5 +31,30 @@ namespace MPQNet
                     break;
             }
         }
+
+
+        protected override Task LoadBlockTableAsync(Stream stream)
+        {
+            if(Header3.BlockTableEntriesCount > 0)
+            {
+                return base.LoadBlockTableAsync(stream);
+            }
+            else
+            {
+                return Task.CompletedTask;
+            }
+        }
+
+        protected override Task LoadHashTableAsync(Stream stream)
+        {
+            if(Header3.HashTableEntriesCount > 0)
+            {
+                return base.LoadHashTableAsync(stream);
+            }
+            else
+            {
+                return Task.CompletedTask;
+            }
+        }
     }
 }

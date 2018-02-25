@@ -89,6 +89,12 @@ namespace MPQNet.Definition
             BlockIndex = blockIndex;
         }
 
+        public override string ToString()
+        {
+            return
+                $"Name1: {Name1}\nName2: {Name2}\nLocale: {Locale}\nBlockIndex: {BlockIndex}";
+        }
+
         #region Structural Equality
         public override bool Equals(object obj)
         {

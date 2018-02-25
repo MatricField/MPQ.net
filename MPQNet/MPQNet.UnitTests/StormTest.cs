@@ -70,7 +70,7 @@ namespace MPQNet.UnitTests
                 {
                     for (int i = 0; i < stormArchive.HashTable.Count; ++i)
                     {
-                        Assert.AreEqual(stormArchive.HashTable[i], myArchive.HashTable[i], "hash entry not equal");
+                        Assert.AreEqual(stormArchive.HashTable[i], myArchive.HashTable[i]/*, "hash entry not equal"*/);
                     }
                 }
                 catch(IndexOutOfRangeException)
