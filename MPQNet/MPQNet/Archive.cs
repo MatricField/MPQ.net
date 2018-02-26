@@ -25,17 +25,21 @@ using MPQNet.Helper;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.MemoryMappedFiles;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace MPQNet
 {
-    public class Archive
+    public class Archive :
+        IDisposable
     {
         protected const int FORMAT_VERSION_OFFSET = 0xC;
 
-        protected FileInfo ArchiveFile { get; private set; }
+        protected MemoryMappedFile ArchiveFile { get; private set; }
+
+        protected string MemoryMapName { get; private set; }
 
         public long ArchiveOffset { get; protected set; }
 
@@ -43,8 +47,8 @@ namespace MPQNet
 
         public ArchiveHeader Header { get; protected set; }
 
-        public IReadOnlyList<HashEntry> HashTable { get; protected set; }
-        public IReadOnlyList<BlockEntry> BlockTable { get; protected set; }
+        public IReadOnlyList<HashEntry> HashTable { get; private set; }
+        public IReadOnlyList<BlockEntry> BlockTable { get; private set; }
 
         public Archive()
         {
@@ -66,13 +70,22 @@ namespace MPQNet
 
         public async Task Init(string path)
         {
-            ArchiveFile = new FileInfo(path);
-            using (var stream = ArchiveFile.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
+            MemoryMapName = Guid.NewGuid().ToString("B");
+            ArchiveFile = MemoryMappedFile.CreateFromFile(path, FileMode.Open, MemoryMapName, 0, MemoryMappedFileAccess.Read);
+            using (var stream = GetStreamView(0, 0))
             {
                 await LoadHeaderAsync(stream);
-                await LoadHashTableAsync(stream);
-                await LoadBlockTableAsync(stream);
             }
+
+            var hashTableTask = LoadHashTableAsync();
+            var blockTableTask = LoadBlockTableAsync();
+            HashTable = await hashTableTask;
+            BlockTable = await blockTableTask;
+        }
+
+        public virtual Stream GetStreamView(long offset, long size)
+        {
+            return ArchiveFile.CreateViewStream(offset, size, MemoryMappedFileAccess.Read);
         }
 
         protected virtual async Task LoadHeaderAsync(Stream stream)
@@ -123,16 +136,18 @@ namespace MPQNet
             }
         }
 
-        protected virtual async Task LoadHashTableAsync(Stream stream)
+        protected virtual async Task<IReadOnlyList<HashEntry>> LoadHashTableAsync()
         {
-            stream.Seek(ArchiveOffset + Header.HashTableOffset, SeekOrigin.Begin);
-            HashTable = await ReadTableAsync<HashEntry>(stream, (int)Header.HashTableEntriesCount, TableInfo.HashTableKey);
+            var count = (int)Header.HashTableEntriesCount;
+            var size = count * Marshal.SizeOf<HashEntry>();
+            return await ReadTableAsync<HashEntry>(GetStreamView(ArchiveOffset + Header.HashTableOffset, size), count, TableInfo.HashTableKey);
         }
 
-        protected virtual async Task LoadBlockTableAsync(Stream stream)
+        protected virtual async Task<IReadOnlyList<BlockEntry>> LoadBlockTableAsync()
         {
-            stream.Seek(ArchiveOffset + Header.BlockTableOffset, SeekOrigin.Begin);
-            BlockTable = await ReadTableAsync<BlockEntry>(stream, (int)Header.BlockTableEntriesCount, TableInfo.BlockTableKey);
+            var count = (int)Header.BlockTableEntriesCount;
+            var size = count * Marshal.SizeOf<BlockEntry>();
+            return await ReadTableAsync<BlockEntry>(GetStreamView(ArchiveOffset + Header.BlockTableOffset, size), count, TableInfo.BlockTableKey);
         }
 
         private async Task<T[]> ReadTableAsync<T>(Stream stream, int count, uint key)
@@ -142,5 +157,53 @@ namespace MPQNet
             MPQCryptor.DecryptDataInplace(data, key);
             return data.MarshalArrayFromBuffer<T>(count);
         }
+
+        protected virtual BlockEntry? FindBlock(string path)
+        {
+            var index = MPQCryptor.HashString(path, HashType.TableOffset);
+            var name1 = MPQCryptor.HashString(path, HashType.NameA);
+            var name2 = MPQCryptor.HashString(path, HashType.NameB);
+            for(var i = index & (HashTable.Count - 1); ; ++i)
+            {
+                //TODO: make this[long]
+                var currentBlock = HashTable[(int)i];
+                if(currentBlock.Name1 == name1 &&
+                    currentBlock.Name2 == name2)
+                {
+                    if(currentBlock.BlockIndex == HashEntry.HASH_ENTRY_NO_LONGER_VALID)
+                    {
+                        return null;
+                    }
+                    return BlockTable[currentBlock.BlockIndex];
+                }
+                if(currentBlock.BlockIndex == HashEntry.HASH_ENTRY_IS_EMPTY)
+                {
+                    return null;
+                }
+            }
+        }
+
+        #region IDisposable Support
+        private bool disposedValue = false;
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    ArchiveFile?.Dispose();
+                }
+                ArchiveFile = null;
+
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+        #endregion
     }
 }

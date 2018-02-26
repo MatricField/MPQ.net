@@ -33,27 +33,27 @@ namespace MPQNet
         }
 
 
-        protected override Task LoadBlockTableAsync(Stream stream)
+        protected override Task<IReadOnlyList<BlockEntry>> LoadBlockTableAsync()
         {
             if(Header3.BlockTableEntriesCount > 0)
             {
-                return base.LoadBlockTableAsync(stream);
+                return base.LoadBlockTableAsync();
             }
             else
             {
-                return Task.CompletedTask;
+                return Task.FromResult<IReadOnlyList<BlockEntry>>(null);
             }
         }
 
-        protected override Task LoadHashTableAsync(Stream stream)
+        protected override Task<IReadOnlyList<HashEntry>> LoadHashTableAsync()
         {
             if(Header3.HashTableEntriesCount > 0)
             {
-                return base.LoadHashTableAsync(stream);
+                return base.LoadHashTableAsync();
             }
             else
             {
-                return Task.CompletedTask;
+                return Task.FromResult<IReadOnlyList<HashEntry>>(null);
             }
         }
     }

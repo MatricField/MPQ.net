@@ -26,6 +26,7 @@ using MPQNet.Definition;
 using System;
 using System.Text;
 using MPQNet.UnitTests.StormLib;
+using System.Collections.Generic;
 
 namespace MPQNet.UnitTests
 {
@@ -37,43 +38,56 @@ namespace MPQNet.UnitTests
         [TestMethod]
         public void CanReadArchiveHeader()
         {
-            var MyArchive = new Archive4(replayPath);
+            ArchiveHeader4 header;
+            UserDataHeader userData;
+            using (var MyArchive = new Archive4(replayPath))
+            {
+                header = MyArchive.Header4;
+                userData = MyArchive.UserDataHeader;
+            }
             using (var stormArchive = new StormArchive(replayPath))
             {
-                switch(stormArchive.Header.FormatVersion)
+                switch (stormArchive.Header.FormatVersion)
                 {
                     case FormatVersions.V4:
-                        Assert.AreEqual(MyArchive.Header4, stormArchive.Header as ArchiveHeader4);
+                        Assert.AreEqual(header, stormArchive.Header as ArchiveHeader4);
                         goto case FormatVersions.V3;
                     case FormatVersions.V3:
-                        Assert.AreEqual(MyArchive.Header3, stormArchive.Header as ArchiveHeader3);
+                        Assert.AreEqual(header, stormArchive.Header as ArchiveHeader3);
                         goto case FormatVersions.V2;
                     case FormatVersions.V2:
-                        Assert.AreEqual(MyArchive.Header2, stormArchive.Header as ArchiveHeader2);
+                        Assert.AreEqual(header, stormArchive.Header as ArchiveHeader2);
                         goto case FormatVersions.V1;
                     case FormatVersions.V1:
-                        Assert.AreEqual(MyArchive.Header, stormArchive.Header);
+                        Assert.AreEqual(header, stormArchive.Header);
                         break;
                 }
-                
-                Assert.AreEqual(stormArchive.UserData, MyArchive.UserDataHeader);
+
+                Assert.AreEqual(stormArchive.UserData, userData);
             }
         }
 
         [TestMethod]
         public void CanLoadHashTable()
         {
-            var myArchive = new Archive4(replayPath);
+            IReadOnlyList<HashEntry> hashTable;
+            IReadOnlyList<BlockEntry> blockTable;
+            using (var myArchive = new Archive4(replayPath))
+            {
+                hashTable = myArchive.HashTable;
+                blockTable = myArchive.BlockTable;
+            }
+
             using (var stormArchive = new StormArchive(replayPath))
             {
                 try
                 {
                     for (int i = 0; i < stormArchive.HashTable.Count; ++i)
                     {
-                        Assert.AreEqual(stormArchive.HashTable[i], myArchive.HashTable[i]/*, "hash entry not equal"*/);
+                        Assert.AreEqual(stormArchive.HashTable[i], hashTable[i]/*, "hash entry not equal"*/);
                     }
                 }
-                catch(IndexOutOfRangeException)
+                catch (IndexOutOfRangeException)
                 {
                     Assert.Fail("hash table size mismatch");
                 }

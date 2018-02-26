@@ -20,12 +20,15 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-namespace MPQNet.Helper
+using System;
+
+namespace MPQNet.Definition
 {
     /// <summary>
     /// Compression types for multiple compressions
     /// </summary>
-    public enum CompressionMethod : uint
+    [Flags]
+    public enum CompressionMethodMasks : byte
     {
         /// <summary>
         /// Huffmann compression (used on WAVE files only)
@@ -70,6 +73,6 @@ namespace MPQNet.Helper
         /// <summary>
         /// Same compression
         /// </summary>
-        NEXT_SAME = 0xFFFFFFFF,
+        NEXT_SAME = 0xFF,
     }
 }

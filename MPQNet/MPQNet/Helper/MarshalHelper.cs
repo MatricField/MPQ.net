@@ -33,7 +33,6 @@ namespace MPQNet.Helper
     /// </summary>
     public static class MarshalHelper
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T MarshalObjectFromBuffer<T>(this byte[] buffer)
         {
             var hBuffer = GCHandle.Alloc(buffer, GCHandleType.Pinned);
@@ -50,7 +49,6 @@ namespace MPQNet.Helper
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T[] MarshalArrayFromBuffer<T>(this byte[] buffer, int count)
         {
             var pBuffer = GCHandle.Alloc(buffer, GCHandleType.Pinned);
@@ -74,7 +72,6 @@ namespace MPQNet.Helper
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<T> MarshalObjectFromStreamAsync<T>(this Stream stream)
         {
             var buffer = new byte[Marshal.SizeOf<T>()];
@@ -116,7 +113,6 @@ namespace MPQNet.Helper
             return stream.GetBuffer().MarshalArrayFromBuffer<T>(count);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T MarshalObjectFromStream<T>(this Stream stream)
         {
             var buffer = new byte[Marshal.SizeOf<T>()];
