@@ -140,14 +140,14 @@ namespace MPQNet
         {
             var count = (int)Header.HashTableEntriesCount;
             var size = count * Marshal.SizeOf<HashEntry>();
-            return await ReadTableAsync<HashEntry>(GetStreamView(ArchiveOffset + Header.HashTableOffset, size), count, TableInfo.HashTableKey);
+            return await ReadTableAsync<HashEntry>(GetStreamView(ArchiveOffset + Header.HashTableOffset, size), count, SpecialFiles.HashTableKey);
         }
 
         protected virtual async Task<IReadOnlyList<BlockEntry>> LoadBlockTableAsync()
         {
             var count = (int)Header.BlockTableEntriesCount;
             var size = count * Marshal.SizeOf<BlockEntry>();
-            return await ReadTableAsync<BlockEntry>(GetStreamView(ArchiveOffset + Header.BlockTableOffset, size), count, TableInfo.BlockTableKey);
+            return await ReadTableAsync<BlockEntry>(GetStreamView(ArchiveOffset + Header.BlockTableOffset, size), count, SpecialFiles.BlockTableKey);
         }
 
         private async Task<T[]> ReadTableAsync<T>(Stream stream, int count, uint key)

@@ -24,11 +24,16 @@ using MPQNet.Helper;
 
 namespace MPQNet.Definition
 {
-    public static class TableInfo
+    public static class SpecialFiles
     {
-        public const string HashTableName = "(hash table)";
-        public static readonly uint HashTableKey = MPQCryptor.HashString(HashTableName, HashType.FileKey);
-        public const string BlockTableName = "(block table)";
-        public static readonly uint BlockTableKey = MPQCryptor.HashString(BlockTableName, HashType.FileKey);
+        public const string HashTable = "(hash table)";
+
+        public static readonly uint HashTableKey = MPQCryptor.HashString(HashTable, HashType.FileKey);
+
+        public const string BlockTable = "(block table)";
+
+        public static readonly uint BlockTableKey = MPQCryptor.HashString(BlockTable, HashType.FileKey);
+
+        public const string ListFile = "(listfile)";
     }
 }
