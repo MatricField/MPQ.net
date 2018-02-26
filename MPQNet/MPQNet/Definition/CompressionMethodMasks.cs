@@ -36,14 +36,14 @@ namespace MPQNet.Definition
         HUFFMANN = 0x01,
 
         /// <summary>
-        /// ZLIB compression
+        /// DEFLATED compression
         /// </summary>
-        ZLIB = 0x02,
+        DEFLATED = 0x02,
 
         /// <summary>
         /// PKWARE DCL compression
         /// </summary>
-        PKWARE = 0x08,
+        IMPLODED = 0x08,
 
         /// <summary>
         /// BZIP2 compression (added in Warcraft III)

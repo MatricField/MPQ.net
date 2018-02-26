@@ -22,6 +22,7 @@
 
 using MPQNet.Definition;
 using MPQNet.Helper;
+using MPQNet.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -86,6 +87,26 @@ namespace MPQNet
         public virtual Stream GetStreamView(long offset, long size)
         {
             return ArchiveFile.CreateViewStream(offset, size, MemoryMappedFileAccess.Read);
+        }
+
+        public virtual UnmanagedMemoryAccessor GetAccessorView(long offset, long size)
+        {
+            return ArchiveFile.CreateViewAccessor(offset, size, MemoryMappedFileAccess.Read);
+        }
+
+        public virtual Stream OpenFile(string path)
+        {
+            var pBlock = FindBlock(path);
+            if(null == pBlock)
+            {
+                return null;
+            }
+            else
+            {
+                var block = pBlock.Value;
+                return new MPQFileStream(this, block.Flags, block.FilePos, (int)block.CompressedSize, path);
+            }
+            
         }
 
         protected virtual async Task LoadHeaderAsync(Stream stream)
