@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using MPQNet.Helper;
 using System.IO.Compression;
 using MPQNet.Cryptography;
+using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 
 namespace MPQNet.IO
 {
@@ -90,7 +91,7 @@ namespace MPQNet.IO
                 }
                 if(compressionMask.HasFlag(CompressionMethodMasks.DEFLATED))
                 {
-                    underlyingStream = new DeflateStream(underlyingStream, CompressionMode.Decompress);
+                    underlyingStream = new InflaterInputStream(underlyingStream);
                 }
                 if (compressionMask.HasFlag(CompressionMethodMasks.SPARSE))
                 {
@@ -111,11 +112,13 @@ namespace MPQNet.IO
 
                 if(flags.HasFlag(MPQFileFlags.ENCRYPTED))
                 {
-                    var buffer = new MemoryStream();
-                    underlyingStream.CopyTo(buffer);
-                    MPQCryptor.DecryptDataInplace(buffer.GetBuffer(), MPQCryptor.HashString(fileName, HashType.FileKey));
-                    underlyingStream.Dispose();
-                    underlyingStream = buffer;
+                    //var buffer = new MemoryStream();
+                    //underlyingStream.CopyTo(buffer);
+                    //var decryptor = new MPQCryptor(MPQCryptor.GetFileKey(fileName));
+                    //decryptor.DecryptDataInplace(buffer.GetBuffer());
+                    //underlyingStream.Dispose();
+                    //underlyingStream = buffer;
+                    underlyingStream = new MPQDecryptStream(underlyingStream, MPQCryptor.GetFileKey(fileName));
                 }
                 BaseStream =  underlyingStream;
             }

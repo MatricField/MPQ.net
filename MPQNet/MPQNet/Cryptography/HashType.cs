@@ -23,7 +23,7 @@
 namespace MPQNet.Cryptography
 {
     /// <summary>
-    /// Different types of hashes to make with <see cref="MPQCryptor"/>
+    /// Different types of hashes to make with <see cref="MPQCryptorBase"/>
     /// </summary>
     public static class HashType
     {
