@@ -11,6 +11,7 @@ using MPQNet.Helper;
 using System.IO.Compression;
 using MPQNet.Cryptography;
 using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
+using MPQNet.Compression;
 
 namespace MPQNet.IO
 {
@@ -73,39 +74,39 @@ namespace MPQNet.IO
 
             using (var accessor = archive.GetAccessorView(actualOffset - 1, file.CompressedSize))
             {
-                var compressionMask = (CompressionMethodMasks)accessor.ReadByte(0);
+                var compressionMask = (CompressionFlags)accessor.ReadByte(0);
                 Stream underlyingStream = archive.GetStreamView(actualOffset, file.CompressedSize);
-                if (compressionMask.HasFlag(CompressionMethodMasks.LZMA))
+                if (compressionMask.HasFlag(CompressionFlags.LZMA))
                 {
                     throw new NotImplementedException();
                     BaseStream = underlyingStream;
                     return;
                 }
-                if (compressionMask.HasFlag(CompressionMethodMasks.BZIP2))
+                if (compressionMask.HasFlag(CompressionFlags.BZIP2))
                 {
                     underlyingStream = new BZip2InputStream(underlyingStream);
                 }
-                if (compressionMask.HasFlag(CompressionMethodMasks.IMPLODED))
+                if (compressionMask.HasFlag(CompressionFlags.IMPLODED))
                 {
                     throw new NotImplementedException();
                 }
-                if(compressionMask.HasFlag(CompressionMethodMasks.DEFLATED))
+                if(compressionMask.HasFlag(CompressionFlags.DEFLATED))
                 {
                     underlyingStream = new InflaterInputStream(underlyingStream);
                 }
-                if (compressionMask.HasFlag(CompressionMethodMasks.SPARSE))
+                if (compressionMask.HasFlag(CompressionFlags.SPARSE))
                 {
                     throw new NotImplementedException();
                 }
-                if (compressionMask.HasFlag(CompressionMethodMasks.HUFFMANN))
+                if (compressionMask.HasFlag(CompressionFlags.HUFFMANN))
                 {
                     throw new NotImplementedException();
                 }
-                if (compressionMask.HasFlag(CompressionMethodMasks.ADPCM_STEREO))
+                if (compressionMask.HasFlag(CompressionFlags.ADPCM_STEREO))
                 {
                     throw new NotImplementedException();
                 }
-                if (compressionMask.HasFlag(CompressionMethodMasks.ADPCM_MONO))
+                if (compressionMask.HasFlag(CompressionFlags.ADPCM_MONO))
                 {
                     throw new NotImplementedException();
                 }
