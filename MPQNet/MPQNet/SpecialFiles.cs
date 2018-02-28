@@ -32,14 +32,14 @@ namespace MPQNet
         /// </summary>
         public const string HashTable = "(hash table)";
 
-        public static readonly uint HashTableKey = MPQCryptor.HashString(HashTable, HashType.FileKey);
+        public static readonly uint HashTableKey = MPQHash.HashName(HashTable, HashType.FileKey);
 
         /// <summary>
         /// Not a file, containing the block table
         /// </summary>
         public const string BlockTable = "(block table)";
 
-        public static readonly uint BlockTableKey = MPQCryptor.HashString(BlockTable, HashType.FileKey);
+        public static readonly uint BlockTableKey = MPQHash.HashName(BlockTable, HashType.FileKey);
 
         /// <summary>
         /// Simply a text file with file paths separated by ';', '\n', '\r', or some combination of these. The file "(listfile)" may not be listed in the listfile.

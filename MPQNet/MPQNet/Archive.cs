@@ -176,15 +176,16 @@ namespace MPQNet
         {
             var data = new byte[count * Marshal.SizeOf<T>()];
             await stream.ReadAsync(data, 0, data.Length);
-            MPQCryptor.DecryptDataInplace(data, key);
+            var decryptor = new MPQCryptor(key);
+            decryptor.DecryptDataInplace(data);
             return data.MarshalArrayFromBuffer<T>(count);
         }
 
         protected virtual BlockEntry? FindBlock(string path)
         {
-            var index = MPQCryptor.HashString(path, HashType.TableOffset);
-            var name1 = MPQCryptor.HashString(path, HashType.NameA);
-            var name2 = MPQCryptor.HashString(path, HashType.NameB);
+            var index = MPQHash.HashPath(path, HashType.TableOffset);
+            var name1 = MPQHash.HashPath(path, HashType.NameA);
+            var name2 = MPQHash.HashPath(path, HashType.NameB);
             for(var i = index & (HashTable.Count - 1); ; ++i)
             {
                 //TODO: make this[long]

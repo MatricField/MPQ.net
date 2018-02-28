@@ -92,7 +92,7 @@ namespace MPQNet.Definition
         public override string ToString()
         {
             return
-                $"Name1: {Name1}\nName2: {Name2}\nLocale: {Locale}\nBlockIndex: {BlockIndex}";
+                $"Name1: {Name1:X}\nName2: {Name2:X}\nLocale: {Locale:X}\nBlockIndex: {BlockIndex}";
         }
 
         #region Structural Equality
