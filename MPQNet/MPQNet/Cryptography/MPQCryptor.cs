@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MPQNet.Definition;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -77,10 +78,14 @@ namespace MPQNet.Cryptography
             Decrypt(reader, writer);
         }
 
-        public static uint GetFileKey(string path)
+        public static uint GetFileKey(MPQFileInfo info)
         {
-            var name = Path.GetFileName(path);
-            return MPQHash.HashName(name, HashType.FileKey);
+            var key = MPQHash.HashName(info.FileName, HashType.FileKey);
+            if(info.Flags.HasFlag(MPQFileFlags.FIX_KEY))
+            {
+                key = (key + info.FileOffset) ^ info.OriginalSize;
+            }
+            return key;
         }
     }
 }

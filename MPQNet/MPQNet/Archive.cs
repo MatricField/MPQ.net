@@ -105,7 +105,13 @@ namespace MPQNet
             else
             {
                 var block = pBlock.Value;
-                return new MPQFileStream(this, block.Flags, block.FilePos, (int)block.CompressedSize, path);
+                var desc = new MPQFileInfo(
+                    fullPath: path,
+                    compressedSize: block.CompressedSize,
+                    originalSize: block.FileSize,
+                    flags: block.Flags,
+                    fileOffset: block.FilePos);
+                return new MPQFileStream(this, desc);
             }
             
         }

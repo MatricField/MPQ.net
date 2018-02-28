@@ -52,29 +52,29 @@ namespace MPQNet.IO
             base.Dispose(disposing);
         }
 
-        public MPQFileStream(Archive archive, MPQFileFlags flags, long fileOffset, int fileSize, string fileName = null)
+        public MPQFileStream(Archive archive, MPQFileInfo info)
         {
-            Initialize(archive, flags, fileOffset, fileSize, fileName);
+            Initialize(archive, info);
         }
 
         protected MPQFileStream()
         {
         }
 
-        protected virtual void Initialize(Archive archive, MPQFileFlags flags, long fileOffset, int fileSize, string fileName = null)
+        protected virtual void Initialize(Archive archive, MPQFileInfo file)
         {
             MyArchive = archive;
-            var actualOffset = archive.ArchiveOffset + fileOffset + 1;
-            if(!flags.HasFlag(MPQFileFlags.SINGLE_UNIT))
+            var actualOffset = archive.ArchiveOffset + file.FileOffset + 1;
+            if(!file.Flags.HasFlag(MPQFileFlags.SINGLE_UNIT))
             {
                 // TODO: Add multiblock file support
                 throw new NotImplementedException();
             }
 
-            using (var accessor = archive.GetAccessorView(actualOffset - 1, fileSize))
+            using (var accessor = archive.GetAccessorView(actualOffset - 1, file.CompressedSize))
             {
                 var compressionMask = (CompressionMethodMasks)accessor.ReadByte(0);
-                Stream underlyingStream = archive.GetStreamView(actualOffset, fileSize);
+                Stream underlyingStream = archive.GetStreamView(actualOffset, file.CompressedSize);
                 if (compressionMask.HasFlag(CompressionMethodMasks.LZMA))
                 {
                     throw new NotImplementedException();
@@ -110,15 +110,9 @@ namespace MPQNet.IO
                     throw new NotImplementedException();
                 }
 
-                if(flags.HasFlag(MPQFileFlags.ENCRYPTED))
+                if(file.Flags.HasFlag(MPQFileFlags.ENCRYPTED))
                 {
-                    //var buffer = new MemoryStream();
-                    //underlyingStream.CopyTo(buffer);
-                    //var decryptor = new MPQCryptor(MPQCryptor.GetFileKey(fileName));
-                    //decryptor.DecryptDataInplace(buffer.GetBuffer());
-                    //underlyingStream.Dispose();
-                    //underlyingStream = buffer;
-                    underlyingStream = new MPQDecryptStream(underlyingStream, MPQCryptor.GetFileKey(fileName));
+                    underlyingStream = new MPQDecryptStream(underlyingStream, file.FileKey);
                 }
                 BaseStream =  underlyingStream;
             }
