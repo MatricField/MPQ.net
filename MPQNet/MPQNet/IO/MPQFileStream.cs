@@ -62,6 +62,11 @@ namespace MPQNet.IO
         {
         }
 
+        /// <remarks>
+        /// When files are added to MPQ archive they are
+        /// first compressed, then encrypted (if applicable).
+        /// Therefore unpacking files so do it in reverse order.
+        /// </remarks>
         protected virtual void Initialize(Archive archive, MPQFileInfo file)
         {
             MyArchive = archive;
@@ -74,49 +79,64 @@ namespace MPQNet.IO
 
             using (var accessor = archive.GetAccessorView(actualOffset - 1, file.CompressedSize))
             {
-                var compressionMask = (CompressionFlags)accessor.ReadByte(0);
+                var compressionFlags = (CompressionFlags)accessor.ReadByte(0);
                 Stream underlyingStream = archive.GetStreamView(actualOffset, file.CompressedSize);
-                if (compressionMask.HasFlag(CompressionFlags.LZMA))
-                {
-                    throw new NotImplementedException();
-                    BaseStream = underlyingStream;
-                    return;
-                }
-                if (compressionMask.HasFlag(CompressionFlags.BZIP2))
-                {
-                    underlyingStream = new BZip2InputStream(underlyingStream);
-                }
-                if (compressionMask.HasFlag(CompressionFlags.IMPLODED))
-                {
-                    throw new NotImplementedException();
-                }
-                if(compressionMask.HasFlag(CompressionFlags.DEFLATED))
-                {
-                    underlyingStream = new InflaterInputStream(underlyingStream);
-                }
-                if (compressionMask.HasFlag(CompressionFlags.SPARSE))
-                {
-                    throw new NotImplementedException();
-                }
-                if (compressionMask.HasFlag(CompressionFlags.HUFFMANN))
-                {
-                    throw new NotImplementedException();
-                }
-                if (compressionMask.HasFlag(CompressionFlags.ADPCM_STEREO))
-                {
-                    throw new NotImplementedException();
-                }
-                if (compressionMask.HasFlag(CompressionFlags.ADPCM_MONO))
-                {
-                    throw new NotImplementedException();
-                }
 
-                if(file.Flags.HasFlag(MPQFileFlags.ENCRYPTED))
+                if (file.Flags.HasFlag(MPQFileFlags.ENCRYPTED))
                 {
                     underlyingStream = new MPQDecryptStream(underlyingStream, file.FileKey);
                 }
-                BaseStream =  underlyingStream;
+                if(IsCompressed(file))
+                {
+                    underlyingStream = Decompress(underlyingStream, compressionFlags);
+                }
+                BaseStream = underlyingStream;
             }
+        }
+
+        private bool IsCompressed(MPQFileInfo file)
+        {
+            return (!file.Flags.HasFlag(MPQFileFlags.SINGLE_UNIT)) ||
+                (file.Flags.HasFlag(MPQFileFlags.COMPRESS) &&
+                file.OriginalSize - file.CompressedSize > 0);
+        }
+
+        protected virtual Stream Decompress(Stream underlyingStream, CompressionFlags flags)
+        {
+            if (flags.HasFlag(CompressionFlags.LZMA))
+            {
+                throw new NotImplementedException();
+                return underlyingStream;
+            }
+            if (flags.HasFlag(CompressionFlags.BZIP2))
+            {
+                underlyingStream = new BZip2InputStream(underlyingStream);
+            }
+            if (flags.HasFlag(CompressionFlags.IMPLODED))
+            {
+                throw new NotImplementedException();
+            }
+            if (flags.HasFlag(CompressionFlags.DEFLATED))
+            {
+                underlyingStream = new InflaterInputStream(underlyingStream);
+            }
+            if (flags.HasFlag(CompressionFlags.SPARSE))
+            {
+                throw new NotImplementedException();
+            }
+            if (flags.HasFlag(CompressionFlags.HUFFMANN))
+            {
+                throw new NotImplementedException();
+            }
+            if (flags.HasFlag(CompressionFlags.ADPCM_STEREO))
+            {
+                throw new NotImplementedException();
+            }
+            if (flags.HasFlag(CompressionFlags.ADPCM_MONO))
+            {
+                throw new NotImplementedException();
+            }
+            return underlyingStream;
         }
 
         public override Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken) =>
