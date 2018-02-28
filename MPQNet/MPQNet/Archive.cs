@@ -20,6 +20,7 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
+using MPQNet.Cryptography;
 using MPQNet.Definition;
 using MPQNet.Helper;
 using MPQNet.IO;

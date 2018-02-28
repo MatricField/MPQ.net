@@ -35,7 +35,7 @@ namespace MPQNet
 
         protected override Task<IReadOnlyList<BlockEntry>> LoadBlockTableAsync()
         {
-            if(Header3.BlockTableEntriesCount > 0)
+            if(null == Header3 || Header3.BlockTableEntriesCount > 0)
             {
                 return base.LoadBlockTableAsync();
             }
@@ -47,7 +47,7 @@ namespace MPQNet
 
         protected override Task<IReadOnlyList<HashEntry>> LoadHashTableAsync()
         {
-            if(Header3.HashTableEntriesCount > 0)
+            if(null == Header3 || Header3.HashTableEntriesCount > 0)
             {
                 return base.LoadHashTableAsync();
             }

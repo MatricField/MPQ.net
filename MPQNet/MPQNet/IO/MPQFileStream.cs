@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using ICSharpCode.SharpZipLib.BZip2;
-using System.IO.Compression;
+using ICSharpCode.SharpZipLib.Zip;
 using System.Threading;
 using System.Threading.Tasks;
 using MPQNet.Helper;
+using System.IO.Compression;
+using MPQNet.Cryptography;
 
 namespace MPQNet.IO
 {

@@ -22,13 +22,25 @@
 
 using System.IO;
 
-namespace MPQNet.Helper
+namespace MPQNet.Cryptography
 {
-    public static class MPQCryptor
+    public class MPQCryptor
     {
         private const int BUFFER_SIZE = 0x500;
 
+        private const uint DEFAULT_SEED = 0xEEEEEEEE;
+
         private static readonly uint[] CryptTable;
+
+        private uint Seed;
+
+        private uint Key;
+
+        public MPQCryptor(uint key, uint seed = DEFAULT_SEED)
+        {
+            Seed = seed;
+            Key = key;
+        }
 
         static MPQCryptor()
         {
@@ -52,6 +64,15 @@ namespace MPQNet.Helper
                 }
             }
 
+        }
+
+        public uint DecryptData(uint encrypt)
+        {
+            Seed += CryptTable[HashType.Key2Mix * 0x100 + (Key & 0xFF)];
+            var decrypted = encrypt ^ (Key + Seed);
+            Key = ((~Key << 0x15) + 0x11111111) | (Key >> 0x0B);
+            Seed = decrypted + Seed + (Seed << 5) + 3;
+            return decrypted;
         }
 
         /// <summary>
@@ -107,16 +128,32 @@ namespace MPQNet.Helper
         {
             var reader = new BinaryReader(new MemoryStream(data));
             var writer = new BinaryWriter(new MemoryStream(data));
-            uint seed = 0xEEEEEEEE;
             try
             {
+                var cryptor = new MPQCryptor(key);
                 for (; ; )
                 {
-                    seed += CryptTable[HashType.Key2Mix * 0x100 + (key & 0xFF)];
-                    var decrypted = reader.ReadUInt32() ^ (key + seed);  
-                    key = ((~key << 0x15) + 0x11111111) | (key >> 0x0B);
-                    seed = decrypted + seed + (seed << 5) + 3;
-                    writer.Write(decrypted);
+                    var encrypted = reader.ReadUInt32();
+                    writer.Write(cryptor.DecryptData(encrypted));
+                }
+            }
+            catch (EndOfStreamException)
+            {
+
+            }
+        }
+
+        public static void DecryptDataInplace(byte[] data, uint key, int offset, int count)
+        {
+            var reader = new BinaryReader(new MemoryStream(data, offset, count));
+            var writer = new BinaryWriter(new MemoryStream(data, offset, count));
+            try
+            {
+                var cryptor = new MPQCryptor(key);
+                for (; ; )
+                {
+                    var encrypted = reader.ReadUInt32();
+                    writer.Write(cryptor.DecryptData(encrypted));
                 }
             }
             catch (EndOfStreamException)
