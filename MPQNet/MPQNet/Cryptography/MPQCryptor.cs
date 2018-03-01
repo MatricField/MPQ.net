@@ -1,8 +1,6 @@
 ﻿using MPQNet.Definition;
-using System;
-using System.Collections.Generic;
+using MPQNet.IO;
 using System.IO;
-using System.Text;
 
 namespace MPQNet.Cryptography
 {
@@ -76,16 +74,6 @@ namespace MPQNet.Cryptography
             var reader = new BinaryReader(new MemoryStream(data, offset, count));
             var writer = new BinaryWriter(new MemoryStream(data, offset, count));
             Decrypt(reader, writer);
-        }
-
-        public static uint GetFileKey(MPQFileInfo info)
-        {
-            var key = MPQHash.HashName(info.FileName, HashType.FileKey);
-            if(info.Flags.HasFlag(MPQFileFlags.FIX_KEY))
-            {
-                key = (key + info.FileOffset) ^ info.OriginalSize;
-            }
-            return key;
         }
     }
 }

@@ -15,7 +15,7 @@ using MPQNet.Compression;
 
 namespace MPQNet.IO
 {
-    public class MPQFileStream :
+    public class DataStream :
         Stream
     {
         protected int BlockSize { get; private set; }
@@ -53,12 +53,12 @@ namespace MPQNet.IO
             base.Dispose(disposing);
         }
 
-        public MPQFileStream(Archive archive, MPQFileInfo info)
+        public DataStream(Archive archive, BlockInfo info)
         {
             Initialize(archive, info);
         }
 
-        protected MPQFileStream()
+        protected DataStream()
         {
         }
 
@@ -67,38 +67,26 @@ namespace MPQNet.IO
         /// first compressed, then encrypted (if applicable).
         /// Therefore unpacking files so do it in reverse order.
         /// </remarks>
-        protected virtual void Initialize(Archive archive, MPQFileInfo file)
+        protected virtual void Initialize(Archive archive, BlockInfo block)
         {
             MyArchive = archive;
-            var actualOffset = archive.ArchiveOffset + file.FileOffset + 1;
-            if(!file.Flags.HasFlag(MPQFileFlags.SINGLE_UNIT))
-            {
-                // TODO: Add multiblock file support
-                throw new NotImplementedException();
-            }
+            var actualOffset = archive.ArchiveOffset + block.Offset + 1;
 
-            using (var accessor = archive.GetAccessorView(actualOffset - 1, file.CompressedSize))
+            using (var accessor = archive.GetAccessorView(actualOffset - 1, block.Size))
             {
                 var compressionFlags = (CompressionFlags)accessor.ReadByte(0);
-                Stream underlyingStream = archive.GetStreamView(actualOffset, file.CompressedSize);
+                Stream underlyingStream = archive.GetStreamView(actualOffset, block.Size);
 
-                if (file.Flags.HasFlag(MPQFileFlags.ENCRYPTED))
+                if (block.Encrypted)
                 {
-                    underlyingStream = new MPQDecryptStream(underlyingStream, file.FileKey);
+                    underlyingStream = new DecryptStream(underlyingStream, block.DecryptionKey);
                 }
-                if(IsCompressed(file))
+                if(block.Compressed)
                 {
                     underlyingStream = Decompress(underlyingStream, compressionFlags);
                 }
                 BaseStream = underlyingStream;
             }
-        }
-
-        private bool IsCompressed(MPQFileInfo file)
-        {
-            return (!file.Flags.HasFlag(MPQFileFlags.SINGLE_UNIT)) ||
-                (file.Flags.HasFlag(MPQFileFlags.COMPRESS) &&
-                file.OriginalSize - file.CompressedSize > 0);
         }
 
         protected virtual Stream Decompress(Stream underlyingStream, CompressionFlags flags)

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace MPQNet.IO
 {
-    public class MPQDecryptStream :
+    public class DecryptStream :
         Stream
     {
 
@@ -40,7 +40,7 @@ namespace MPQNet.IO
 
         private byte[] DecryptBuffer = new byte[256];
 
-        public MPQDecryptStream(Stream baseStream, uint key)
+        public DecryptStream(Stream baseStream, uint key)
         {
             BaseStream = baseStream;
             Cryptor = new MPQCryptor(key);

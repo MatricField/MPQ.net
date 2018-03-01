@@ -97,21 +97,21 @@ namespace MPQNet
 
         public virtual Stream OpenFile(string path)
         {
-            var pBlock = FindBlock(path);
-            if(null == pBlock)
+            if(TryFindBlock(path, out var block))
             {
-                return null;
+                if(block.Flags.HasFlag(MPQFileFlags.SINGLE_UNIT))
+                {
+                    var desc = new SingleUnitFileInfo(path, this, block);
+                    return new DataStream(this, desc);
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
             }
             else
             {
-                var block = pBlock.Value;
-                var desc = new MPQFileInfo(
-                    fullPath: path,
-                    compressedSize: block.CompressedSize,
-                    originalSize: block.FileSize,
-                    flags: block.Flags,
-                    fileOffset: block.FilePos);
-                return new MPQFileStream(this, desc);
+                return null;
             }
             
         }
@@ -187,7 +187,7 @@ namespace MPQNet
             return data.MarshalArrayFromBuffer<T>(count);
         }
 
-        protected virtual BlockEntry? FindBlock(string path)
+        protected virtual bool TryFindBlock(string path, out BlockEntry result)
         {
             var index = MPQHash.HashPath(path, HashType.TableOffset);
             var name1 = MPQHash.HashPath(path, HashType.NameA);
@@ -201,13 +201,16 @@ namespace MPQNet
                 {
                     if(currentBlock.BlockIndex == HashEntry.HASH_ENTRY_NO_LONGER_VALID)
                     {
-                        return null;
+                        result = default(BlockEntry);
+                        return false;
                     }
-                    return BlockTable[currentBlock.BlockIndex];
+                    result = BlockTable[currentBlock.BlockIndex];
+                    return true;
                 }
                 if(currentBlock.BlockIndex == HashEntry.HASH_ENTRY_IS_EMPTY)
                 {
-                    return null;
+                    result = default(BlockEntry);
+                    return false;
                 }
             }
         }
