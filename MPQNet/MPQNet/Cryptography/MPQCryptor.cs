@@ -32,33 +32,21 @@ namespace MPQNet.Cryptography
 
         public void Encrypt(BinaryReader input, BinaryWriter output)
         {
-            try
+            var stream = input.BaseStream;
+            while (stream.Length - stream.Position >= sizeof(uint))
             {
-                for (; ; )
-                {
-                    var decrypted = input.ReadUInt32();
-                    output.Write(Encrypt(decrypted));
-                }
-            }
-            catch (EndOfStreamException)
-            {
-
+                var decrypted = input.ReadUInt32();
+                output.Write(Encrypt(decrypted));
             }
         }
 
         public void Decrypt(BinaryReader input, BinaryWriter output)
         {
-            try
+            var stream = input.BaseStream;
+            while (stream.Length - stream.Position >= sizeof(uint))
             {
-                for (; ; )
-                {
-                    var encrypted = input.ReadUInt32();
-                    output.Write(Decrypt(encrypted));
-                }
-            }
-            catch (EndOfStreamException)
-            {
-
+                var encrypted = input.ReadUInt32();
+                output.Write(Decrypt(encrypted));
             }
         }
 

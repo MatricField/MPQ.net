@@ -99,14 +99,91 @@ namespace MPQNet
         {
             if(TryFindBlock(path, out var block))
             {
-                if(block.Flags.HasFlag(MPQFileFlags.SINGLE_UNIT))
+                var fileInfo = new MPQFileInfo(path, this, block);
+                if (block.Flags.HasFlag(MPQFileFlags.SINGLE_UNIT))
                 {
-                    var desc = new SingleUnitFileInfo(path, this, block);
-                    return new DataStream(this, desc);
+                    return new DataStream(this, fileInfo.AsSingleUnit());
                 }
                 else
                 {
-                    throw new NotImplementedException();
+                    if (Header.SectorSize > uint.MaxValue)
+                    {
+                        throw new NotSupportedException();
+                    }
+                    var sectorSize = (uint)Header.SectorSize;
+                    var fileSize = fileInfo.OriginalSize;
+                    var sectorCount = fileSize / sectorSize;
+                    sectorCount = fileSize % sectorSize == 0 ? sectorCount : sectorCount + 1;
+
+                    if (sectorCount > int.MaxValue)
+                    {
+                        throw new NotSupportedException();
+                    }
+
+                    if (sectorCount < 0)
+                    {
+                        throw new InvalidDataException();
+                    }
+
+                    var count = Convert.ToInt32(sectorCount);
+
+                    var sectorInfos = new List<SectorInfo>(count);
+                    if (fileInfo.Flags.HasFlag(MPQFileFlags.COMPRESS))
+                    {
+                        var rawFileDataStream = GetStreamView(ArchiveOffset + fileInfo.Offset, fileInfo.Size);
+                        var rawSectorOffsetTable = new byte[(count + 1) * sizeof(int)];
+                        rawFileDataStream.Read(rawSectorOffsetTable, 0, rawSectorOffsetTable.Length);
+                        if (fileInfo.Flags.HasFlag(MPQFileFlags.ENCRYPTED))
+                        {
+                            var fileKey = fileInfo.FileKey;
+                            var cryptor = new MPQCryptor(fileKey - 1);
+                            cryptor.DecryptDataInplace(rawSectorOffsetTable);
+                            var sectorOffsetTable = new int[count + 1];
+                            Buffer.BlockCopy(rawSectorOffsetTable, 0, sectorOffsetTable, 0, rawSectorOffsetTable.Length);
+
+                            for (int i = 0; i < count; ++i)
+                            {
+                                var offset = sectorOffsetTable[i];
+                                var size = sectorOffsetTable[i + 1] - offset;
+                                var sector = new SectorInfo(fileInfo.Offset + (uint)offset, (uint)size, true, fileKey + (uint)i);
+                                sectorInfos.Add(sector);
+                            }
+                        }
+                        else
+                        {
+                            var sectorOffsetTable = new int[count + 1];
+                            Buffer.BlockCopy(rawSectorOffsetTable, 0, sectorOffsetTable , 0, rawSectorOffsetTable.Length);
+                            for(int i = 0; i < count; ++i)
+                            {
+                                var offset = sectorOffsetTable[i];
+                                var size = sectorOffsetTable[i + 1] - offset;
+                                var sector = new SectorInfo(fileInfo.Offset + (uint)offset, (uint)size, true);
+                                sectorInfos.Add(sector);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (fileInfo.Flags.HasFlag(MPQFileFlags.ENCRYPTED))
+                        {
+                            var fileKey = fileInfo.FileKey;
+                            for(int i = 0; i < count; ++i)
+                            {
+                                var sector = new SectorInfo(fileInfo.Offset, sectorSize, fileKey + (uint)i);
+                                sectorInfos.Add(sector);
+                            }
+                        }
+                        else
+                        {
+                            for (int i = 0; i < count; ++i)
+                            {
+                                var sector = new SectorInfo(fileInfo.Offset, sectorSize);
+                                sectorInfos.Add(sector);
+                            }
+                        }
+                    }
+                    var streams = sectorInfos.ConvertAll(info => new DataStream(this, info));
+                    return new ConcatStream(streams);
                 }
             }
             else

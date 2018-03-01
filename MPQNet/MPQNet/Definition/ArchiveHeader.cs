@@ -60,7 +60,7 @@ namespace MPQNet.Definition
         /// </summary>
         public virtual ushort SectorSizeShift { get; }
 
-        public virtual int SectorSize => 512 << SectorSizeShift;
+        public virtual long SectorSize => 512 << SectorSizeShift;
 
         private readonly uint _HashTableOffset;
 

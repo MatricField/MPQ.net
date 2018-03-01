@@ -18,32 +18,28 @@ namespace MPQNet.IO
 
         public override long Length => BaseStream.Length;
 
+        private long _Position;
+
         public override long Position
         {
-            get => BaseStream.Position;
-            set
-            {
-                if(0 == value)
-                {
-                    Reset();
-                }
-                else
-                {
-                    throw new NotSupportedException();
-                }
-            }
+            get => _Position;
+            set => throw new NotSupportedException();
         }
 
         private MPQCryptor Cryptor;
 
         private Stream BaseStream;
 
-        private byte[] DecryptBuffer = new byte[256];
+        private const int BUFFER_SIZE = 256;
+
+        private MemoryStream DecryptBuffer;
 
         public DecryptStream(Stream baseStream, uint key)
         {
             BaseStream = baseStream;
             Cryptor = new MPQCryptor(key);
+            DecryptBuffer = new MemoryStream();
+            ReadAndDecrypt();
         }
 
         public override void Flush()
@@ -51,13 +47,45 @@ namespace MPQNet.IO
 
         }
 
+        public override int ReadByte()
+        {
+            if(DecryptBuffer.Position == DecryptBuffer.Length)
+            {
+                ReadAndDecrypt();
+            }
+            var ret = DecryptBuffer.ReadByte();
+            ++_Position;
+            return ret;
+        }
+
         public override int Read(byte[] buffer, int offset, int count)
         {
-            GarunteeBufferSize(count);
-            var acrualCount = BaseStream.Read(DecryptBuffer, 0, count);
-            Cryptor.DecryptDataInplace(DecryptBuffer, 0, acrualCount);
-            Buffer.BlockCopy(DecryptBuffer, 0, buffer, offset, acrualCount);
-            return acrualCount;
+            var readCount = 0;
+            while(Position != Length)
+            {
+                readCount += DecryptBuffer.Read(buffer, offset + readCount, count - readCount);
+                ReadAndDecrypt(count - readCount);
+            }
+            _Position += readCount;
+            return readCount;
+        }
+
+        private void ReadAndDecrypt(int count = BUFFER_SIZE)
+        {
+            var readCount = Convert.ToInt32(BaseStream.Length - BaseStream.Position);
+            DecryptBuffer.SetLength(count);
+            if (readCount < count)
+            {
+                DecryptBuffer.Position = 0;
+                BaseStream.CopyTo(DecryptBuffer);
+            }
+            else
+            {
+                readCount = BaseStream.Read(DecryptBuffer.GetBuffer(), 0, count);
+            }
+            Cryptor.DecryptDataInplace(DecryptBuffer.GetBuffer(), 0, readCount);
+            DecryptBuffer.Position = 0;
+            DecryptBuffer.SetLength(readCount);
         }
 
         public override long Seek(long offset, SeekOrigin origin)
@@ -91,16 +119,6 @@ namespace MPQNet.IO
         {
             BaseStream.Seek(0, SeekOrigin.Begin);
             Cryptor.Reset();
-        }
-
-        private void GarunteeBufferSize(int count)
-        {
-            var len = DecryptBuffer.Length;
-            while (len < count)
-            {
-                len *= 2;
-            }
-            DecryptBuffer = new byte[len];
         }
     }
 }

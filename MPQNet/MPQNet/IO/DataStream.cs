@@ -53,7 +53,7 @@ namespace MPQNet.IO
             base.Dispose(disposing);
         }
 
-        public DataStream(Archive archive, BlockInfo info)
+        public DataStream(Archive archive, SectorInfo info)
         {
             Initialize(archive, info);
         }
@@ -67,10 +67,10 @@ namespace MPQNet.IO
         /// first compressed, then encrypted (if applicable).
         /// Therefore unpacking files so do it in reverse order.
         /// </remarks>
-        protected virtual void Initialize(Archive archive, BlockInfo block)
+        protected virtual void Initialize(Archive archive, SectorInfo block)
         {
             MyArchive = archive;
-            var actualOffset = archive.ArchiveOffset + block.Offset + 1;
+            var actualOffset = archive.ArchiveOffset + block.Position + 1;
 
             using (var accessor = archive.GetAccessorView(actualOffset - 1, block.Size))
             {
