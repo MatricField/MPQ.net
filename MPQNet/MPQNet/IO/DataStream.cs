@@ -1,16 +1,9 @@
-﻿using MPQNet.Definition;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Text;
 using ICSharpCode.SharpZipLib.BZip2;
-using ICSharpCode.SharpZipLib.Zip;
+using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 using System.Threading;
 using System.Threading.Tasks;
-using MPQNet.Helper;
-using System.IO.Compression;
-using MPQNet.Cryptography;
-using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 using MPQNet.Compression;
 
 namespace MPQNet.IO
@@ -93,8 +86,16 @@ namespace MPQNet.IO
         {
             if (flags.HasFlag(CompressionFlags.LZMA))
             {
+                //var decoder = new LZMA.Decoder();
+                //var buffer = new MemoryStream();
+                //var proterties = new byte[5];
+                //underlyingStream.Read(proterties, 0, 5);
+                //decoder.SetDecoderProperties(proterties);
+                //var lenBytes = new byte[8];
+                //underlyingStream.Read(lenBytes, 0, 8);
+                //var len = BitConverter.ToInt64(lenBytes, 0);
+                //decoder.Code(underlyingStream, buffer, underlyingStream.Length, len, null);
                 throw new NotImplementedException();
-                return underlyingStream;
             }
             if (flags.HasFlag(CompressionFlags.BZIP2))
             {

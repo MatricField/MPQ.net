@@ -61,7 +61,7 @@ namespace MPQNet.IO
         public override int Read(byte[] buffer, int offset, int count)
         {
             var readCount = 0;
-            while(Position != Length)
+            while(Position != Length && count - readCount > 0)
             {
                 readCount += DecryptBuffer.Read(buffer, offset + readCount, count - readCount);
                 ReadAndDecrypt(count - readCount);
