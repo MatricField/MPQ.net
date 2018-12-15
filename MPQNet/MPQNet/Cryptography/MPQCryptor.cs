@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using MPQNet.Definition;
+using MPQNet.IO;
 using System.IO;
-using System.Text;
 
 namespace MPQNet.Cryptography
 {
@@ -33,33 +32,21 @@ namespace MPQNet.Cryptography
 
         public void Encrypt(BinaryReader input, BinaryWriter output)
         {
-            try
+            var stream = input.BaseStream;
+            while (stream.Length - stream.Position >= sizeof(uint))
             {
-                for (; ; )
-                {
-                    var decrypted = input.ReadUInt32();
-                    output.Write(Encrypt(decrypted));
-                }
-            }
-            catch (EndOfStreamException)
-            {
-
+                var decrypted = input.ReadUInt32();
+                output.Write(Encrypt(decrypted));
             }
         }
 
         public void Decrypt(BinaryReader input, BinaryWriter output)
         {
-            try
+            var stream = input.BaseStream;
+            while (stream.Length - stream.Position >= sizeof(uint))
             {
-                for (; ; )
-                {
-                    var encrypted = input.ReadUInt32();
-                    output.Write(Decrypt(encrypted));
-                }
-            }
-            catch (EndOfStreamException)
-            {
-
+                var encrypted = input.ReadUInt32();
+                output.Write(Decrypt(encrypted));
             }
         }
 
@@ -75,12 +62,6 @@ namespace MPQNet.Cryptography
             var reader = new BinaryReader(new MemoryStream(data, offset, count));
             var writer = new BinaryWriter(new MemoryStream(data, offset, count));
             Decrypt(reader, writer);
-        }
-
-        public static uint GetFileKey(string path)
-        {
-            var name = Path.GetFileName(path);
-            return MPQHash.HashName(name, HashType.FileKey);
         }
     }
 }

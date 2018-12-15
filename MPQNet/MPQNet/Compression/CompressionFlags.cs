@@ -22,13 +22,13 @@
 
 using System;
 
-namespace MPQNet.Definition
+namespace MPQNet.Compression
 {
     /// <summary>
     /// Compression types for multiple compressions
     /// </summary>
     [Flags]
-    public enum CompressionMethodMasks : byte
+    public enum CompressionFlags : byte
     {
         /// <summary>
         /// Huffmann compression (used on WAVE files only)

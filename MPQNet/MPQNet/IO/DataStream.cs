@@ -1,20 +1,14 @@
-﻿using MPQNet.Definition;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Text;
 using ICSharpCode.SharpZipLib.BZip2;
-using ICSharpCode.SharpZipLib.Zip;
+using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 using System.Threading;
 using System.Threading.Tasks;
-using MPQNet.Helper;
-using System.IO.Compression;
-using MPQNet.Cryptography;
-using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
+using MPQNet.Compression;
 
 namespace MPQNet.IO
 {
-    public class MPQFileStream :
+    public class DataStream :
         Stream
     {
         protected int BlockSize { get; private set; }
@@ -52,76 +46,86 @@ namespace MPQNet.IO
             base.Dispose(disposing);
         }
 
-        public MPQFileStream(Archive archive, MPQFileFlags flags, long fileOffset, int fileSize, string fileName = null)
+        public DataStream(Archive archive, SectorInfo info)
         {
-            Initialize(archive, flags, fileOffset, fileSize, fileName);
+            Initialize(archive, info);
         }
 
-        protected MPQFileStream()
+        protected DataStream()
         {
         }
 
-        protected virtual void Initialize(Archive archive, MPQFileFlags flags, long fileOffset, int fileSize, string fileName = null)
+        /// <remarks>
+        /// When files are added to MPQ archive they are
+        /// first compressed, then encrypted (if applicable).
+        /// Therefore unpacking files so do it in reverse order.
+        /// </remarks>
+        protected virtual void Initialize(Archive archive, SectorInfo block)
         {
             MyArchive = archive;
-            var actualOffset = archive.ArchiveOffset + fileOffset + 1;
-            if(!flags.HasFlag(MPQFileFlags.SINGLE_UNIT))
+            var actualOffset = archive.ArchiveOffset + block.Position + 1;
+
+            using (var accessor = archive.GetAccessorView(actualOffset - 1, block.Size))
             {
-                // TODO: Add multiblock file support
+                var compressionFlags = (CompressionFlags)accessor.ReadByte(0);
+                Stream underlyingStream = archive.GetStreamView(actualOffset, block.Size);
+
+                if (block.Encrypted)
+                {
+                    underlyingStream = new DecryptStream(underlyingStream, block.DecryptionKey);
+                }
+                if(block.Compressed)
+                {
+                    underlyingStream = Decompress(underlyingStream, compressionFlags);
+                }
+                BaseStream = underlyingStream;
+            }
+        }
+
+        protected virtual Stream Decompress(Stream underlyingStream, CompressionFlags flags)
+        {
+            if (flags.HasFlag(CompressionFlags.LZMA))
+            {
+                //var decoder = new LZMA.Decoder();
+                //var buffer = new MemoryStream();
+                //var proterties = new byte[5];
+                //underlyingStream.Read(proterties, 0, 5);
+                //decoder.SetDecoderProperties(proterties);
+                //var lenBytes = new byte[8];
+                //underlyingStream.Read(lenBytes, 0, 8);
+                //var len = BitConverter.ToInt64(lenBytes, 0);
+                //decoder.Code(underlyingStream, buffer, underlyingStream.Length, len, null);
                 throw new NotImplementedException();
             }
-
-            using (var accessor = archive.GetAccessorView(actualOffset - 1, fileSize))
+            if (flags.HasFlag(CompressionFlags.BZIP2))
             {
-                var compressionMask = (CompressionMethodMasks)accessor.ReadByte(0);
-                Stream underlyingStream = archive.GetStreamView(actualOffset, fileSize);
-                if (compressionMask.HasFlag(CompressionMethodMasks.LZMA))
-                {
-                    throw new NotImplementedException();
-                    BaseStream = underlyingStream;
-                    return;
-                }
-                if (compressionMask.HasFlag(CompressionMethodMasks.BZIP2))
-                {
-                    underlyingStream = new BZip2InputStream(underlyingStream);
-                }
-                if (compressionMask.HasFlag(CompressionMethodMasks.IMPLODED))
-                {
-                    throw new NotImplementedException();
-                }
-                if(compressionMask.HasFlag(CompressionMethodMasks.DEFLATED))
-                {
-                    underlyingStream = new InflaterInputStream(underlyingStream);
-                }
-                if (compressionMask.HasFlag(CompressionMethodMasks.SPARSE))
-                {
-                    throw new NotImplementedException();
-                }
-                if (compressionMask.HasFlag(CompressionMethodMasks.HUFFMANN))
-                {
-                    throw new NotImplementedException();
-                }
-                if (compressionMask.HasFlag(CompressionMethodMasks.ADPCM_STEREO))
-                {
-                    throw new NotImplementedException();
-                }
-                if (compressionMask.HasFlag(CompressionMethodMasks.ADPCM_MONO))
-                {
-                    throw new NotImplementedException();
-                }
-
-                if(flags.HasFlag(MPQFileFlags.ENCRYPTED))
-                {
-                    //var buffer = new MemoryStream();
-                    //underlyingStream.CopyTo(buffer);
-                    //var decryptor = new MPQCryptor(MPQCryptor.GetFileKey(fileName));
-                    //decryptor.DecryptDataInplace(buffer.GetBuffer());
-                    //underlyingStream.Dispose();
-                    //underlyingStream = buffer;
-                    underlyingStream = new MPQDecryptStream(underlyingStream, MPQCryptor.GetFileKey(fileName));
-                }
-                BaseStream =  underlyingStream;
+                underlyingStream = new BZip2InputStream(underlyingStream);
             }
+            if (flags.HasFlag(CompressionFlags.IMPLODED))
+            {
+                throw new NotImplementedException();
+            }
+            if (flags.HasFlag(CompressionFlags.DEFLATED))
+            {
+                underlyingStream = new InflaterInputStream(underlyingStream);
+            }
+            if (flags.HasFlag(CompressionFlags.SPARSE))
+            {
+                throw new NotImplementedException();
+            }
+            if (flags.HasFlag(CompressionFlags.HUFFMANN))
+            {
+                throw new NotImplementedException();
+            }
+            if (flags.HasFlag(CompressionFlags.ADPCM_STEREO))
+            {
+                throw new NotImplementedException();
+            }
+            if (flags.HasFlag(CompressionFlags.ADPCM_MONO))
+            {
+                throw new NotImplementedException();
+            }
+            return underlyingStream;
         }
 
         public override Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken) =>
