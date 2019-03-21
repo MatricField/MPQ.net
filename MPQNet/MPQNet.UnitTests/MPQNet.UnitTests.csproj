@@ -11,14 +11,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Lib\StormLibWin32.dll" />
-    <None Remove="StormLib\StormLibWin32.dll" />
+    <Compile Remove="Lib\**" />
+    <EmbeddedResource Remove="Lib\**" />
+    <None Remove="Lib\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Lib\StormLibWin32.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <None Remove="StormLibInterop\StormLibWin32.dll" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,9 +31,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Lib\StormLibWin64.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="Replays\StandardBio.SC2Replay">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
