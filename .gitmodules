@@ -1,0 +1,3 @@
+[submodule "MPQNet/MPQNet.UnitTests/StormLib"]
+	path = MPQNet/MPQNet.UnitTests/StormLib
+	url = https://github.com/ladislav-zezula/StormLib
