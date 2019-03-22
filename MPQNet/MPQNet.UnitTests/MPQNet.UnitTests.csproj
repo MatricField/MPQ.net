@@ -1,19 +1,32 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
+
+    <Platforms>AnyCPU;x64;x86</Platforms>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="Lib\**" />
+    <Compile Remove="StormLib\**" />
     <EmbeddedResource Remove="Lib\**" />
+    <EmbeddedResource Remove="StormLib\**" />
     <None Remove="Lib\**" />
+    <None Remove="StormLib\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,6 +41,14 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MPQNet\MPQNet.csproj" />
+    <ProjectReference Include=".\StormLib\StormLib_vs17_dll.vcxproj">
+      <Project>{CB385198-50B1-4CF4-883B-11F042DED6AA}</Project>
+      <Name>StormLib_dll</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <OutputItemType>ContentWithTargetPath</OutputItemType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>StormLib.dll</TargetPath>
+    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>

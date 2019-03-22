@@ -25,7 +25,7 @@ using System.IO;
 using MPQNet.Definition;
 using System;
 using System.Text;
-using MPQNet.UnitTests.StormLib;
+using MPQNet.UnitTests.StormLibInterop;
 using System.Collections.Generic;
 
 namespace MPQNet.UnitTests

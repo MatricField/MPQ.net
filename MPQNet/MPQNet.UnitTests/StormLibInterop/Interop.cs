@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MPQNet.UnitTests.StormLib
+namespace MPQNet.UnitTests.StormLibInterop
 {
     internal static class Interop
     {
