@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MPQNet.UnitTests.StormLibInterop
+namespace MPQNet.UnitTests.StormLib
 {
     [StructLayout(LayoutKind.Sequential)]
     internal sealed class StormArchiveInterop

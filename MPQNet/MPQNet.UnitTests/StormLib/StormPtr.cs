@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace MPQNet.UnitTests.StormLibInterop
+namespace MPQNet.UnitTests.StormLib
 {
     [StructLayout(LayoutKind.Sequential)]
     public class StormPtr :

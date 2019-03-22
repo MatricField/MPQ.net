@@ -22,15 +22,12 @@
 
   <ItemGroup>
     <Compile Remove="Lib\**" />
-    <Compile Remove="StormLib\**" />
     <EmbeddedResource Remove="Lib\**" />
-    <EmbeddedResource Remove="StormLib\**" />
     <None Remove="Lib\**" />
-    <None Remove="StormLib\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="StormLibInterop\StormLibWin32.dll" />
+    <None Remove="StormLib\StormLibWin32.dll" />
   </ItemGroup>
 
   <ItemGroup>
