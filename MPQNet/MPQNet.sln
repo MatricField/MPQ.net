@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MPQNet", "MPQNet\MPQNet.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MPQNet.UnitTests", "MPQNet.UnitTests\MPQNet.UnitTests.csproj", "{2DED1899-9ABA-421B-9B61-CC884F1F098E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StormLib_dll", "MPQNet.UnitTests\StormLib\StormLib_vs17_dll.vcxproj", "{CB385198-50B1-4CF4-883B-11F042DED6AA}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StormLib_dll", "..\StormLib\StormLib_vs17_dll.vcxproj", "{CB385198-50B1-4CF4-883B-11F042DED6AA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -50,6 +50,7 @@ Global
 		{CB385198-50B1-4CF4-883B-11F042DED6AA}.Debug|x86.Build.0 = Debug|Win32
 		{CB385198-50B1-4CF4-883B-11F042DED6AA}.Release|Any CPU.ActiveCfg = Release|Win32
 		{CB385198-50B1-4CF4-883B-11F042DED6AA}.Release|x64.ActiveCfg = Release|x64
+		{CB385198-50B1-4CF4-883B-11F042DED6AA}.Release|x64.Build.0 = Release|x64
 		{CB385198-50B1-4CF4-883B-11F042DED6AA}.Release|x86.ActiveCfg = Release|Win32
 		{CB385198-50B1-4CF4-883B-11F042DED6AA}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection

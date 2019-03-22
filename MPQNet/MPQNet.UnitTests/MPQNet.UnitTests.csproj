@@ -38,7 +38,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MPQNet\MPQNet.csproj" />
-    <ProjectReference Include=".\StormLib\StormLib_vs17_dll.vcxproj">
+    <ProjectReference Include="..\..\StormLib\StormLib_vs17_dll.vcxproj">
       <Project>{CB385198-50B1-4CF4-883B-11F042DED6AA}</Project>
       <Name>StormLib_dll</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
