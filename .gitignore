@@ -286,6 +286,9 @@ __pycache__/
 *.btm.cs
 *.odx.cs
 *.xsd.cs
+
+# Project specific ingnores 
 /MPQNet.Test/MPQNet.Test
 /MPQNet.Test
 /MPQNet/MPQNet.UnitTests/Lib
+/Lib

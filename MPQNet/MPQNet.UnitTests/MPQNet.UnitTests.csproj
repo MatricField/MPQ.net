@@ -21,13 +21,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Lib\**" />
-    <EmbeddedResource Remove="Lib\**" />
-    <None Remove="Lib\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="StormLib\StormLibWin32.dll" />
+    <Compile Remove="Lib\include\**" />
+    <Compile Remove="Lib\lib\**" />
+    <EmbeddedResource Remove="Lib\include\**" />
+    <EmbeddedResource Remove="Lib\lib\**" />
+    <None Remove="Lib\include\**" />
+    <None Remove="Lib\lib\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,17 +37,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MPQNet\MPQNet.csproj" />
-    <ProjectReference Include="..\..\StormLib\StormLib_vs17_dll.vcxproj">
-      <Project>{CB385198-50B1-4CF4-883B-11F042DED6AA}</Project>
-      <Name>StormLib_dll</Name>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <OutputItemType>ContentWithTargetPath</OutputItemType>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>StormLib.dll</TargetPath>
-    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Lib\bin\storm.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Replays\StandardBio.SC2Replay">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

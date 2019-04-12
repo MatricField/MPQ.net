@@ -120,7 +120,7 @@ namespace MPQNet.UnitTests.StormLib
 
         public StormArchive(string path)
         {
-            SFileOpenArchive(path, out StormArchiveHandle);
+            Interop.OpenArchive(path, out StormArchiveHandle);
             Data = Marshal.PtrToStructure<StormArchiveInterop>(StormArchiveHandle);
         }
 
@@ -131,7 +131,7 @@ namespace MPQNet.UnitTests.StormLib
         {
             if (!disposedValue)
             {
-                SFileCloseArchive(StormArchiveHandle);
+                Interop.SFileCloseArchive(StormArchiveHandle);
                 disposedValue = true;
             }
         }
@@ -147,25 +147,6 @@ namespace MPQNet.UnitTests.StormLib
         {
             DoDispose();
             GC.SuppressFinalize(this);
-        }
-        #endregion
-
-        #region Interop
-
-        [DllImport(@"StormLib.dll", CallingConvention = CallingConvention.Winapi)]
-        public static extern bool SFileOpenArchive(
-            [MarshalAs(UnmanagedType.LPStr)]string filename,
-            uint prioerity,
-            uint openFlags,
-            out IntPtr phMPQ);
-
-        [DllImport(@"StormLib.dll", CallingConvention = CallingConvention.Winapi)]
-        public static extern bool SFileCloseArchive(IntPtr hMPQ);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool SFileOpenArchive(string filename, out IntPtr phMPQ)
-        {
-            return SFileOpenArchive(filename, 0, 0, out phMPQ);
         }
         #endregion
     }
