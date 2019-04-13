@@ -32,33 +32,35 @@ namespace MPQNet.Definition
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct BlockEntry : IEquatable<BlockEntry>
     {
+        private readonly uint _FilePos;
+        private readonly uint _CompressedSize;
+        private readonly uint _FileSize;
+        private readonly MPQFileFlags _Flags;
+
         /// <summary>
         ///  Offset of the beginning of the file, relative to the beginning of the archive.
         /// </summary>
-        public uint FilePos { get; }
-
+        public uint FilePos => _FilePos;
         /// <summary>
         /// Compressed file size
         /// </summary>
-        public uint CompressedSize { get; }
-
+        public uint CompressedSize => _CompressedSize;
         /// <summary>
         /// Only valid if the block is a file; otherwise meaningless, and should be 0.
         /// If the file is compressed, this is the size of the uncompressed file data.
         /// </summary>
-        public uint FileSize { get; }
-
+        public uint FileSize => _FileSize;
         /// <summary>
         /// Flags for the file.
         /// </summary>
-        public MPQFileFlags Flags { get; }
+        public MPQFileFlags Flags => _Flags;
 
         public BlockEntry(uint filePos, uint compressedSize, uint fileSize, MPQFileFlags flags)
         {
-            FilePos = filePos;
-            CompressedSize = compressedSize;
-            FileSize = fileSize;
-            Flags = flags;
+            _FilePos = filePos;
+            _CompressedSize = compressedSize;
+            _FileSize = fileSize;
+            _Flags = flags;
         }
 
         #region Structural Equality

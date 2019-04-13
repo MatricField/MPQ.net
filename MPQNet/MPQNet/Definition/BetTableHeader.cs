@@ -30,7 +30,7 @@ namespace MPQNet.Definition
     /// Structure for BET table header
     /// </summary>
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class ExtTableHeaderBet : ExtTableHeaderCommon, IEquatable<ExtTableHeaderBet>
+    public class BetTableHeader : ExtTableHeader
     {
         /// <summary>
         /// Size of the entire BET table, including the header (in bytes)
@@ -124,73 +124,5 @@ namespace MPQNet.Definition
         /// Number of flags in the following array
         /// </summary>
         public uint FlagCount { get; }
-
-        #region Structural Equality
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as ExtTableHeaderBet);
-        }
-
-        public bool Equals(ExtTableHeaderBet other)
-        {
-            return other != null &&
-                   base.Equals(other) &&
-                   TableSize == other.TableSize &&
-                   EntryCount == other.EntryCount &&
-                   Unknown08 == other.Unknown08 &&
-                   TableEntrySize == other.TableEntrySize &&
-                   BitIndex_FilePos == other.BitIndex_FilePos &&
-                   BitIndex_FileSize == other.BitIndex_FileSize &&
-                   BitIndex_CmpSize == other.BitIndex_CmpSize &&
-                   BitIndex_FlagIndex == other.BitIndex_FlagIndex &&
-                   BitIndex_Unknown == other.BitIndex_Unknown &&
-                   BitCount_FilePos == other.BitCount_FilePos &&
-                   BitCount_FileSize == other.BitCount_FileSize &&
-                   BitCount_CmpSize == other.BitCount_CmpSize &&
-                   BitCount_FlagIndex == other.BitCount_FlagIndex &&
-                   BitCount_Unknown == other.BitCount_Unknown &&
-                   BitTotal_NameHash2 == other.BitTotal_NameHash2 &&
-                   BitExtra_NameHash2 == other.BitExtra_NameHash2 &&
-                   BitCount_NameHash2 == other.BitCount_NameHash2 &&
-                   NameHashArraySize == other.NameHashArraySize &&
-                   FlagCount == other.FlagCount;
-        }
-
-        public override int GetHashCode()
-        {
-            var hashCode = 62860529;
-            hashCode = hashCode * -1521134295 + base.GetHashCode();
-            hashCode = hashCode * -1521134295 + TableSize.GetHashCode();
-            hashCode = hashCode * -1521134295 + EntryCount.GetHashCode();
-            hashCode = hashCode * -1521134295 + Unknown08.GetHashCode();
-            hashCode = hashCode * -1521134295 + TableEntrySize.GetHashCode();
-            hashCode = hashCode * -1521134295 + BitIndex_FilePos.GetHashCode();
-            hashCode = hashCode * -1521134295 + BitIndex_FileSize.GetHashCode();
-            hashCode = hashCode * -1521134295 + BitIndex_CmpSize.GetHashCode();
-            hashCode = hashCode * -1521134295 + BitIndex_FlagIndex.GetHashCode();
-            hashCode = hashCode * -1521134295 + BitIndex_Unknown.GetHashCode();
-            hashCode = hashCode * -1521134295 + BitCount_FilePos.GetHashCode();
-            hashCode = hashCode * -1521134295 + BitCount_FileSize.GetHashCode();
-            hashCode = hashCode * -1521134295 + BitCount_CmpSize.GetHashCode();
-            hashCode = hashCode * -1521134295 + BitCount_FlagIndex.GetHashCode();
-            hashCode = hashCode * -1521134295 + BitCount_Unknown.GetHashCode();
-            hashCode = hashCode * -1521134295 + BitTotal_NameHash2.GetHashCode();
-            hashCode = hashCode * -1521134295 + BitExtra_NameHash2.GetHashCode();
-            hashCode = hashCode * -1521134295 + BitCount_NameHash2.GetHashCode();
-            hashCode = hashCode * -1521134295 + NameHashArraySize.GetHashCode();
-            hashCode = hashCode * -1521134295 + FlagCount.GetHashCode();
-            return hashCode;
-        }
-
-        public static bool operator ==(ExtTableHeaderBet bet1, ExtTableHeaderBet bet2)
-        {
-            return EqualityComparer<ExtTableHeaderBet>.Default.Equals(bet1, bet2);
-        }
-
-        public static bool operator !=(ExtTableHeaderBet bet1, ExtTableHeaderBet bet2)
-        {
-            return !(bet1 == bet2);
-        } 
-        #endregion
     }
 }
