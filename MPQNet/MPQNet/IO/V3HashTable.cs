@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using MPQNet.Definition;
 using System.Data.HashFunction.Jenkins;
+using System.Runtime.InteropServices;
 
 namespace MPQNet.IO
 {

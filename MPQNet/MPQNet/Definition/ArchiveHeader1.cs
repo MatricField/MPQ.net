@@ -25,7 +25,7 @@ using System.Runtime.InteropServices;
 namespace MPQNet.Definition
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class ArchiveHeader : ArchiveInfo
+    public class ArchiveHeader1 : ArchiveInfo
     {
         private readonly ushort _SectorSizeShift;
         private readonly uint _HashTableOffset;

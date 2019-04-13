@@ -25,7 +25,7 @@ using System.Runtime.InteropServices;
 namespace MPQNet.Definition
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class ArchiveInfo
+    public class ArchiveInfo : MPQSectionBase
     {
         private readonly uint _HeaderSize;
         private readonly uint _ArchiveSize;

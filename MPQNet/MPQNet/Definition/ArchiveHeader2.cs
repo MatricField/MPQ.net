@@ -26,7 +26,7 @@ using System.Runtime.InteropServices;
 namespace MPQNet.Definition
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class ArchiveHeader2 : ArchiveHeader
+    public class ArchiveHeader2 : ArchiveHeader1
     {
         /// <summary>
         /// Combine high bits and low bits of offset data

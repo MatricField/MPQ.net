@@ -10,12 +10,28 @@ namespace MPQNet.IO
     public class MemoryMappedFileIO:
         LowLevelIOHandlerBase
     {
+        private const FileMode FILE_MODE = FileMode.Open;
+
+        private const FileShare FILE_SHARE = FileShare.Read;
+
+        private string _Path;
+
         private MemoryMappedFile _ArchiveFile;
 
-        public MemoryMappedFileIO(MemoryMappedFile getArchiveFileFunc, long archiveFileOffset)
+        public string MemoryMapName { get; }
+
+        public MemoryMappedFileIO(string path, long archiveFileOffset = 0)
         {
-            _ArchiveFile = getArchiveFileFunc;
+            _Path = path;
+            MemoryMapName = Guid.NewGuid().ToString();
+
+            _ArchiveFile = MemoryMappedFile.CreateFromFile(path, FILE_MODE, MemoryMapName, 0, MemoryMappedFileAccess.Read);
             BaseOffset = archiveFileOffset;
+        }
+
+        public override Stream GetFullArchiveStream()
+        {
+            return File.Open(_Path, FILE_MODE, FileAccess.Read, FILE_SHARE);
         }
 
         public override Stream GetStream(long offset, long size) =>
@@ -23,5 +39,14 @@ namespace MPQNet.IO
 
         public override Task<Stream> GetStreamAsync(long offset, long size) =>
             Task.FromResult(GetStream(offset, size));
+
+        protected override void DoDispose(bool disposing)
+        {
+            if(disposing)
+            {
+                _ArchiveFile.Dispose();
+            }
+            base.DoDispose(disposing);
+        }
     }
 }

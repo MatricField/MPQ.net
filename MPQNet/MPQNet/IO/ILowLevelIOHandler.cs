@@ -11,5 +11,7 @@ namespace MPQNet.IO
         Task<Stream> GetStreamAsync(long offset, long size);
 
         Stream GetStream(long offset, long size);
+
+        Stream GetFullArchiveStream();
     }
 }
