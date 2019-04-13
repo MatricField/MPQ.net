@@ -27,7 +27,7 @@ using System.Runtime.InteropServices;
 namespace MPQNet.Definition
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class UserDataHeader : HeaderCommon, IEquatable<UserDataHeader>
+    public class UserDataHeader : MPQSectionBase, IEquatable<UserDataHeader>
     {
         /// <summary>
         /// Maximum size of the user data

@@ -1,6 +1,6 @@
 ﻿//MIT License
 
-//Copyright(c) 2018 Mingxi "Lucien" Du
+//Copyright(c) 2019 Mingxi "Lucien" Du
 
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -20,49 +20,36 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace MPQNet.Definition
 {
-    /// <summary>
-    /// Common fields for all headers
-    /// </summary>
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public abstract class HeaderCommon : IEquatable<HeaderCommon>
+    public class ArchiveInfo
     {
+        private readonly uint _HeaderSize;
+        private readonly uint _ArchiveSize;
+        private readonly FormatVersions _FormatVersion;
+
         /// <summary>
-        /// Indicates that the file is a MoPaQ archive.
+        /// Size of the archive header.
         /// </summary>
-        public Signatures ID { get; }
-
-        #region Structural Equality
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as HeaderCommon);
-        }
-
-        public bool Equals(HeaderCommon other)
-        {
-            return other != null &&
-                   ID == other.ID;
-        }
-
-        public override int GetHashCode()
-        {
-            return 1213502048 + ID.GetHashCode();
-        }
-
-        public static bool operator ==(HeaderCommon common1, HeaderCommon common2)
-        {
-            return EqualityComparer<HeaderCommon>.Default.Equals(common1, common2);
-        }
-
-        public static bool operator !=(HeaderCommon common1, HeaderCommon common2)
-        {
-            return !(common1 == common2);
-        }
-        #endregion
+        public virtual uint HeaderSize => _HeaderSize;
+        /// <summary>
+        /// Size of the whole archive, including the header.
+        /// Does not include the strong digital signature, 
+        /// if present. This size is used, among other things,
+        /// for determining the region to hash in computing 
+        /// the digital signature.
+        /// This field is deprecated in the Burning Crusade MoPaQ format,
+        /// and the size of the archive is calculated 
+        /// as the size from the beginning of the archive to the end 
+        /// of the hash table, block table, or extended block table(whichever is largest).
+        /// </summary>
+        public virtual uint ArchiveSize => _ArchiveSize;
+        /// <summary>
+        /// MoPaQ format version.
+        /// </summary>
+        public virtual FormatVersions FormatVersion => _FormatVersion;
     }
 }

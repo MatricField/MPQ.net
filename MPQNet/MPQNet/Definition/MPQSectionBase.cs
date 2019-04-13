@@ -20,30 +20,21 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-using MPQNet.Cryptography;
-using MPQNet.Helper;
+using System.Runtime.InteropServices;
 
-namespace MPQNet
+namespace MPQNet.Definition
 {
-    public static class SpecialFiles
+    /// <summary>
+    /// Common fields for all MPQ sections
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public abstract class MPQSectionBase
     {
-        /// <summary>
-        /// Not a file, containing the hash table
-        /// </summary>
-        public const string HashTable = "(hash table)";
-
-        public static readonly uint HashTableKey = MPQHash.HashName(HashTable, HashType.FileKey);
+        private readonly Signatures _ID;
 
         /// <summary>
-        /// Not a file, containing the block table
+        /// Indicates that the file is a MoPaQ archive.
         /// </summary>
-        public const string BlockTable = "(block table)";
-
-        public static readonly uint BlockTableKey = MPQHash.HashName(BlockTable, HashType.FileKey);
-
-        /// <summary>
-        /// Simply a text file with file paths separated by ';', '\n', '\r', or some combination of these. The file "(listfile)" may not be listed in the listfile.
-        /// </summary>
-        public const string ListFile = "(listfile)";
+        public virtual Signatures ID => _ID;
     }
 }

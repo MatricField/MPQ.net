@@ -20,16 +20,13 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace MPQNet.Definition
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class ArchiveHeader4 : ArchiveHeader3, IEquatable<ArchiveHeader4>
+    public class ArchiveHeader4 : ArchiveHeader3
     {
         private const int MD5_DIGEST_SIZE = 0x10;
 
@@ -99,59 +96,5 @@ namespace MPQNet.Definition
         /// MD5 of the MPQ header from signature to (including) MD5_HetTable
         /// </summary>
         public IReadOnlyList<byte> MD5_MpqHeader => _MD5_MpqHeader;
-
-        #region Structural Equality
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as ArchiveHeader4);
-        }
-
-        public bool Equals(ArchiveHeader4 other)
-        {
-            return other != null &&
-                   base.Equals(other) &&
-                   HashTableSize64 == other.HashTableSize64 &&
-                   BlockTableSize64 == other.BlockTableSize64 &&
-                   HiBlockTableSize64 == other.HiBlockTableSize64 &&
-                   HetTableSize64 == other.HetTableSize64 &&
-                   BetTableSize64 == other.BetTableSize64 &&
-                   Enumerable.SequenceEqual(MD5_BlockTable, other.MD5_BlockTable) &&
-                   Enumerable.SequenceEqual(MD5_HashTable, other.MD5_HashTable) &&
-                   Enumerable.SequenceEqual(MD5_HiBlockTable, other.MD5_HiBlockTable) &&
-                   Enumerable.SequenceEqual(MD5_BetTable, other.MD5_BetTable) &&
-                   Enumerable.SequenceEqual(MD5_HetTable, other.MD5_HetTable) &&
-                   Enumerable.SequenceEqual(MD5_MpqHeader, other.MD5_MpqHeader);
-        }
-
-        public override int GetHashCode()
-        {
-            var hashCode = -223769345;
-            hashCode = hashCode * -1521134295 + base.GetHashCode();
-            hashCode = hashCode * -1521134295 + HashTableSize64.GetHashCode();
-            hashCode = hashCode * -1521134295 + BlockTableSize64.GetHashCode();
-            hashCode = hashCode * -1521134295 + HiBlockTableSize64.GetHashCode();
-            hashCode = hashCode * -1521134295 + HetTableSize64.GetHashCode();
-            hashCode = hashCode * -1521134295 + BetTableSize64.GetHashCode();
-
-            // NOTE: not hashing arrays for performance consideration
-            //hashCode = hashCode * -1521134295 +((IStructuralEquatable)MD5_BlockTable).GetHashCode(EqualityComparer<byte>.Default);
-            //hashCode = hashCode * -1521134295 +((IStructuralEquatable)MD5_HashTable).GetHashCode(EqualityComparer<byte>.Default);
-            //hashCode = hashCode * -1521134295 +((IStructuralEquatable)MD5_HiBlockTable).GetHashCode(EqualityComparer<byte>.Default);
-            //hashCode = hashCode * -1521134295 +((IStructuralEquatable)MD5_BetTable).GetHashCode(EqualityComparer<byte>.Default);
-            //hashCode = hashCode * -1521134295 +((IStructuralEquatable)MD5_HetTable).GetHashCode(EqualityComparer<byte>.Default);
-            //hashCode = hashCode * -1521134295 +((IStructuralEquatable)MD5_MpqHeader).GetHashCode(EqualityComparer<byte>.Default);
-            return hashCode;
-        }
-
-        public static bool operator ==(ArchiveHeader4 header1, ArchiveHeader4 header2)
-        {
-            return EqualityComparer<ArchiveHeader4>.Default.Equals(header1, header2);
-        }
-
-        public static bool operator !=(ArchiveHeader4 header1, ArchiveHeader4 header2)
-        {
-            return !(header1 == header2);
-        } 
-        #endregion
     }
 }
