@@ -31,11 +31,11 @@ namespace MPQNet.IO
 
         public override Stream GetFullArchiveStream()
         {
-            return File.Open(_Path, FILE_MODE, FileAccess.Read, FILE_SHARE);
+            return _ArchiveFile.CreateViewStream(0, 0, MemoryMappedFileAccess.Read);
         }
 
         public override Stream GetStream(long offset, long size) =>
-            _ArchiveFile.CreateViewStream(BaseOffset + offset, size);
+            _ArchiveFile.CreateViewStream(BaseOffset + offset, size, MemoryMappedFileAccess.Read);
 
         public override Task<Stream> GetStreamAsync(long offset, long size) =>
             Task.FromResult(GetStream(offset, size));

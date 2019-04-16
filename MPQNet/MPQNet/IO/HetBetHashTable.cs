@@ -10,7 +10,8 @@ using System.Runtime.InteropServices;
 
 namespace MPQNet.IO
 {
-    public class HetBetHashTable
+    public class HetBetHashTable: 
+        IMPQHashTable
     {
         private HetTableHeader _HetHeader;
         private BetTableHeader _BetHeader;
@@ -41,7 +42,7 @@ namespace MPQNet.IO
 
         }
 
-        public MPQFileInfo this[string key]
+        public IMPQFileInfo this[string key]
         {
             get
             {
@@ -61,7 +62,7 @@ namespace MPQNet.IO
             throw new NotImplementedException();
         }
 
-        public bool TryGetValue(string key, out MPQFileInfo value)
+        public bool TryGetValue(string key, out IMPQFileInfo value)
         {
             throw new NotImplementedException();
         }

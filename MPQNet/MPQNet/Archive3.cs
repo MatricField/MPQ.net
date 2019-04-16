@@ -32,7 +32,7 @@ namespace MPQNet
             return new HetBetHashTable(hetStream, betStream);
         }
 
-        public static bool TryReadArchive3(ILowLevelIOHandler IOHandler, UserDataHeader userData, out Archive3 archive)
+        public static bool TryReadArchive(ILowLevelIOHandler IOHandler, UserDataHeader userData, out Archive3 archive)
         {
             using (var headerStream = IOHandler.GetStream(0, Marshal.SizeOf<ArchiveHeader3>()))
             {
