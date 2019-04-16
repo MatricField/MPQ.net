@@ -15,6 +15,11 @@ namespace MPQNet.IO
             BaseOffset = archiveStartOffset;
         }
 
+        public override Stream GetFullArchiveStream()
+        {
+            return GetArchiveFile();
+        }
+
         public override Stream GetStream(long offset, long size)
         {
             var archiveFile = GetArchiveFile();

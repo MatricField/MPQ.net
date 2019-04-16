@@ -4,21 +4,40 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using MPQNet.Definition;
+using MPQNet.Helper;
 using System.Data.HashFunction.Jenkins;
 using System.Runtime.InteropServices;
 
 namespace MPQNet.IO
 {
-    public class V3HashTable
+    public class HetBetHashTable
     {
         private HetTableHeader _HetHeader;
         private BetTableHeader _BetHeader;
         private byte[] _HetHashes;
         private byte[] _BetHashes;
-        private MPQFileInfo[] _FileInfos;
 
-        public V3HashTable(Stream hetStream, Stream betStream)
+        public HetBetHashTable(Stream hetStream, Stream betStream)
         {
+            _HetHeader = hetStream.MarshalObjectFromStream<HetTableHeader>();
+            _BetHeader = betStream.MarshalObjectFromStream<BetTableHeader>();
+            _HetHashes = new byte[_HetHeader.TotalCount];
+
+            hetStream.Read(_HetHashes, 0, _HetHashes.Length);
+            {
+                var buffer = new byte[_HetHeader.TotalCount];
+
+            }
+
+
+            var fileFlags = new MPQFileFlags[_BetHeader.FlagCount];
+            {
+                var reader = new BinaryReader(betStream);
+                for(int i = 0; i < fileFlags.Length; ++i)
+                {
+                    fileFlags[i] = (MPQFileFlags)reader.ReadUInt32();
+                }
+            }
 
         }
 

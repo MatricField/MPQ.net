@@ -45,30 +45,37 @@ namespace MPQNet.Definition
         /// Size of the entire HET table, including HET_TABLE_HEADER (in bytes)
         /// </summary>
         public uint TableSize => _TableSize;
+
         /// <summary>
         /// Number of occupied entries in the HET table
         /// </summary>
         public uint EntryCount => _EntryCount;
+
         /// <summary>
         /// Total number of entries in the HET table
         /// </summary>
         public uint TotalCount => _TotalCount;
+
         /// <summary>
         /// Size of the name hash entry (in bits)
         /// </summary>
         public uint NameHashBitSize => _NameHashBitSize;
+
         /// <summary>
         /// Total size of file index (in bits)
         /// </summary>
         public uint IndexSizeTotal => _IndexSizeTotal;
+
         /// <summary>
         /// Extra bits in the file index
         /// </summary>
         public uint IndexSizeExtra => _IndexSizeExtra;
+
         /// <summary>
         /// Effective size of the file index (in bits)
         /// </summary>
         public uint IndexSize => _IndexSize;
+
         /// <summary>
         /// Size of the block index subtable (in bytes)
         /// </summary>

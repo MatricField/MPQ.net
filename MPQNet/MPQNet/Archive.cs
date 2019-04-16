@@ -11,18 +11,18 @@ namespace MPQNet
 {
     public static class Archive
     {
-        public static IArchive LoadArchiveFromFile(string path)
+        public static bool TryLoadArchiveFromFile(string path, out IArchive result)
         {
             var io = new MemoryMappedFileIO(path);
-            IArchive result = null;
             using (var stream = io.GetFullArchiveStream())
             {
-                var size = Marshal.SizeOf<ArchiveInfo>();
-                UserDataHeader userDataHeader;
+                var infoSize = Marshal.SizeOf<ArchiveInfo>();
+                UserDataHeader userDataHeader = default;
                 bool notStop = true;
                 while(notStop)
                 {
                     var info = stream.MarshalObjectFromStream<ArchiveInfo>();
+                    stream.Seek(-infoSize, SeekOrigin.Current);
                     switch(info.ID)
                     {
                         case Signatures.MPQ_UserData:
@@ -31,9 +31,35 @@ namespace MPQNet
                             stream.Seek(userDataHeaderOffset + userDataHeader.HeaderOffset, SeekOrigin.Begin);
                             break;
                         case Signatures.MPQ:
-                            throw new NotImplementedException();
-                            //TODO: implement LoadArchive
-                            break;
+                            io.BaseOffset = stream.Position;
+                            switch(info.FormatVersion)
+                            {
+                                case FormatVersions.V4:
+                                    if(false)
+                                    {
+
+                                    }
+                                    else
+                                    {
+                                        goto case FormatVersions.V3;
+                                    }
+                                case FormatVersions.V3:
+                                    if(Archive3.TryReadArchive3(io, userDataHeader, out var archive3))
+                                    {
+                                        result = archive3;
+                                        return true;
+                                    }
+                                    else
+                                    {
+                                        goto case FormatVersions.V2;
+                                    }
+                                case FormatVersions.V2:
+                                    throw new NotImplementedException();
+                                case FormatVersions.V1:
+                                    throw new NotImplementedException();
+                                default:
+                                    throw new NotSupportedException();
+                            }
                         default:
                             var pos = stream.Position;
                             if(pos == stream.Seek(0x200, SeekOrigin.Current))
@@ -44,7 +70,8 @@ namespace MPQNet
                     }
                 }
             }
-            return result;
+            result = default;
+            return false;
         }
     }
 }
