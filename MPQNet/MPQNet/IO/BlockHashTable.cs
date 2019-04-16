@@ -21,7 +21,7 @@ namespace MPQNet.IO
             _BlockTable = ReadTable<BlockEntry>(IOHandler, blockOffset, blockCount, SpecialFiles.BlockTableKey);
         }
 
-        public IMPQFileInfo this[string key]
+        public BlockEntry this[string key]
         {
             get
             {
@@ -36,7 +36,7 @@ namespace MPQNet.IO
             }
         }
 
-        public bool TryGetValue(string key, out IMPQFileInfo value)
+        public bool TryGetValue(string key, out BlockEntry value)
         {
             var index = MPQHash.HashPath(key, HashType.TableOffset);
             var name1 = MPQHash.HashPath(key, HashType.NameA);

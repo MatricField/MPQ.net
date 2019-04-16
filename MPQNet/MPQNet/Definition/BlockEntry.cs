@@ -29,8 +29,7 @@ namespace MPQNet.Definition
     /// File description block contains informations about the file
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public sealed class BlockEntry:
-        IMPQFileInfo
+    public sealed class BlockEntry
     {
         private uint _FilePos;
         private uint _CompressedSize;

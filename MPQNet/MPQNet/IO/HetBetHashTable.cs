@@ -42,7 +42,7 @@ namespace MPQNet.IO
 
         }
 
-        public IMPQFileInfo this[string key]
+        public BlockEntry this[string key]
         {
             get
             {
@@ -62,7 +62,7 @@ namespace MPQNet.IO
             throw new NotImplementedException();
         }
 
-        public bool TryGetValue(string key, out IMPQFileInfo value)
+        public bool TryGetValue(string key, out BlockEntry value)
         {
             throw new NotImplementedException();
         }

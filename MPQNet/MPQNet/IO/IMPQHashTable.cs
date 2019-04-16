@@ -1,9 +1,11 @@
-﻿namespace MPQNet.IO
+﻿using MPQNet.Definition;
+
+namespace MPQNet.IO
 {
     public interface IMPQHashTable
     {
-        IMPQFileInfo this[string key] { get; }
+        BlockEntry this[string key] { get; }
 
-        bool TryGetValue(string key, out IMPQFileInfo value);
+        bool TryGetValue(string key, out BlockEntry value);
     }
 }

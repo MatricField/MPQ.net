@@ -52,7 +52,7 @@ namespace MPQNet.UnitTests.StormLib
         /// </summary>
         public UserDataHeader UserData => Data.UserData;
 
-        public ArchiveHeader Header => Data.HeaderData;
+        public ArchiveHeader4 Header => Data.HeaderData;
 
         public uint dwHETBlockSize => Data.dwHETBlockSize;
 

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MPQNet.IO
+namespace MPQNet.IO.LowLevelIO
 {
     public abstract class LowLevelIOHandlerBase :
         ILowLevelIOHandler, IDisposable

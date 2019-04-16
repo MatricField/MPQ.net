@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 
-namespace MPQNet.IO
+namespace MPQNet.IO.LowLevelIO
 {
     public class GeneralStreamIO :
         LowLevelIOHandlerBase

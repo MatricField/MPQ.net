@@ -1,38 +1,42 @@
 ﻿using MPQNet.Definition;
 using MPQNet.IO;
+using MPQNet.IO.FileIO;
 using System;
 using System.Collections.Generic;
 using System.IO;
 
 namespace MPQNet
 {
-    public abstract class MPQArchiveBase:
+
+    public class MPQArchive :
         IArchive
     {
-        private ILowLevelIOHandler IOHandler;
+        private IFileIOHandler IOHandler;
         private IMPQHashTable hashTable;
         private List<string> fileList;
-        public UserDataHeader UserDataHeader { get; }
+        private UserDataInfo userDataInfo;
 
         public bool CanEnumerateFile => fileList != null;
 
-        public MPQArchiveBase(ILowLevelIOHandler IOHandler, IMPQHashTable hashTable, UserDataHeader userData = null)
+        public bool HasUserData => userDataInfo.UserDataSize > 0;
+
+        public MPQArchive(IFileIOHandler IOHandler, IMPQHashTable hashTable, in UserDataInfo userData = default)
         {
-            if(IOHandler == null || hashTable == null)
+            if (IOHandler == null || hashTable == null)
             {
                 throw new ArgumentNullException();
             }
-            this.UserDataHeader = userData;
+            this.userDataInfo = userData;
             this.IOHandler = IOHandler;
             this.hashTable = hashTable;
-            if(TryOpenFile(SpecialFiles.ListFile, out var listFileStream))
+            if (TryOpenFile(SpecialFiles.ListFile, out var listFileStream))
             {
                 using (listFileStream)
                 {
                     fileList = new List<string>();
                     var reader = new StreamReader(listFileStream);
                     var line = reader.ReadLine();
-                    while(null != line)
+                    while (null != line)
                     {
                         fileList.Add(line);
                         line = reader.ReadLine();
@@ -43,9 +47,9 @@ namespace MPQNet
 
         public Stream OpenFile(string path)
         {
-            if(TryOpenFile(path, out var stream))
+            if (TryOpenFile(path, out var stream))
             {
-                return stream; 
+                return stream;
             }
             else
             {
@@ -55,9 +59,14 @@ namespace MPQNet
 
         public bool TryOpenFile(string path, out Stream stream)
         {
-            if(hashTable.TryGetValue(path, out var info))
+            if (hashTable.TryGetValue(path, out var block))
             {
-                stream = OpenFileStream(info);
+                var info = new MPQFileInfo()
+                {
+                    Name = Path.GetFileName(path),
+                    Block = block
+                };
+                stream = IOHandler.OpenFile(info);
                 return true;
             }
             else
@@ -70,6 +79,13 @@ namespace MPQNet
         public IEnumerable<string> EnumerateFile =>
             fileList ?? throw new InvalidOperationException();
 
-        protected abstract Stream OpenFileStream(IMPQFileInfo info);
+        public Stream GetUserDataStream()
+        {
+            if (!HasUserData)
+            {
+                throw new InvalidOperationException();
+            }
+            return IOHandler.LowLevelIO.GetStream(userDataInfo.UserDataOffset, userDataInfo.UserDataSize);
+        }
     }
 }

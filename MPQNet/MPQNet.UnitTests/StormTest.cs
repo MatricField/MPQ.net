@@ -40,6 +40,11 @@ namespace MPQNet.UnitTests
         {
             ArchiveHeader4 header;
             UserDataHeader userData;
+
+            if(Archive.TryLoadArchiveFromFile(replayPath, out var archive))
+            {
+
+            }
             using (var MyArchive = new Archive4(replayPath))
             {
                 header = MyArchive.Header4;

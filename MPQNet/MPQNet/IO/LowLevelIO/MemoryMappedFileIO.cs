@@ -5,7 +5,7 @@ using System.IO.MemoryMappedFiles;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MPQNet.IO
+namespace MPQNet.IO.LowLevelIO
 {
     public class MemoryMappedFileIO:
         LowLevelIOHandlerBase
