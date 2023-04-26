@@ -25,7 +25,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace MPQNet.Definition
 {
-    internal record class Header2 : Header1
+    public record class Header2 : Header1
     {
         protected ulong _ExtendedBlockTableOffset;
 

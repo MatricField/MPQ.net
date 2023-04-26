@@ -25,7 +25,7 @@ using Math = MPQNet.Helper.Math;
 
 namespace MPQNet.Definition
 {
-    internal record class Header1 : Header
+    public record class Header1 : Header
     {
         protected ushort _SectorSizeShift;
         protected uint _HashTableOffset;

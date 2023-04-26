@@ -7,24 +7,10 @@ using System.Text;
 
 namespace MPQNet.Definition
 {
-    internal/* unsafe*/ ref struct RawHeader
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public unsafe struct RawHeader
     {
         public const int MD5_DIGEST_SIZE = 0x10;
-
-        // Size of the archive header
-        public uint dwHeaderSize;
-
-        // Size of MPQ archive
-        // This field is deprecated in the Burning Crusade MoPaQ format, and the size of the archive
-        // is calculated as the size from the beginning of the archive to the end of the hash table,
-        // block table, or extended block table (whichever is largest).
-        public uint dwArchiveSize;
-
-        // 0 = Format 1 (up to The Burning Crusade)
-        // 1 = Format 2 (The Burning Crusade and newer)
-        // 2 = Format 3 (WoW - Cataclysm beta or newer)
-        // 3 = Format 4 (WoW - Cataclysm beta or newer)
-        public ushort wFormatVersion;
 
         // Power of two exponent specifying the number of 512-byte disk sectors in each logical sector
         // in the archive. The size of each logical sector in the archive is 512 * 2^wBlockSize.
@@ -82,87 +68,129 @@ namespace MPQNet.Definition
         // Compressed size of the BET block
         public ulong BetTableSize64;
 
-        //// Size of raw data chunk to calculate MD5.
-        //// MD5 of each data chunk follows the raw file data.
-        //public uint dwRawChunkSize;
+        // Size of raw data chunk to calculate MD5.
+        // MD5 of each data chunk follows the raw file data.
+        public uint dwRawChunkSize;
 
-        //// Array of MD5's
-        //fixed byte _MD5_BlockTable[MD5_DIGEST_SIZE];      // MD5 of the block table before decryption
-        //public Span<byte> MD5_BlockTable
-        //{
-        //    get
-        //    {
-        //        fixed (byte* ptr = _MD5_BetTable)
-        //        {
-        //            return new Span<byte>(ptr, MD5_DIGEST_SIZE);
-        //        }
-        //    }
-        //}
+        // Array of MD5's
+        fixed byte _MD5_BlockTable[MD5_DIGEST_SIZE];      // MD5 of the block table before decryption
+        public ReadOnlySpan<byte> MD5_BlockTable
+        {
+            get
+            {
+                fixed (byte* ptr = _MD5_BlockTable)
+                {
+                    return new ReadOnlySpan<byte>(ptr, MD5_DIGEST_SIZE);
+                }
+            }
+            init
+            {
+                fixed (byte* ptr = _MD5_BlockTable)
+                {
+                    value.CopyTo(new Span<byte>(ptr, MD5_DIGEST_SIZE));
+                }
+            }
+        }
 
-        //fixed byte _MD5_HashTable[MD5_DIGEST_SIZE];       // MD5 of the hash table before decryption
+        fixed byte _MD5_HashTable[MD5_DIGEST_SIZE];       // MD5 of the hash table before decryption
 
-        //public Span<byte> MD5_HashTable
-        //{
-        //    get
-        //    {
-        //        fixed (byte* ptr = _MD5_HashTable)
-        //        {
-        //            return new Span<byte>(ptr, MD5_DIGEST_SIZE);
-        //        }
-        //    }
-        //}
+        public ReadOnlySpan<byte> MD5_HashTable
+        {
+            get
+            {
+                fixed (byte* ptr = _MD5_HashTable)
+                {
+                    return new ReadOnlySpan<byte>(ptr, MD5_DIGEST_SIZE);
+                }
+            }
+            init
+            {
+                fixed (byte* ptr = _MD5_HashTable)
+                {
+                    value.CopyTo(new Span<byte>(ptr, MD5_DIGEST_SIZE));
+                }
+            }
+        }
 
-        //fixed byte _MD5_HiBlockTable[MD5_DIGEST_SIZE];    // MD5 of the hi-block table
+        fixed byte _MD5_HiBlockTable[MD5_DIGEST_SIZE];    // MD5 of the hi-block table
 
-        //public Span<byte> MD5_HiBlockTable
-        //{
-        //    get
-        //    {
-        //        fixed (byte* ptr = _MD5_HiBlockTable)
-        //        {
-        //            return new Span<byte>(ptr, MD5_DIGEST_SIZE);
-        //        }
-        //    }
-        //}
+        public ReadOnlySpan<byte> MD5_HiBlockTable
+        {
+            get
+            {
+                fixed (byte* ptr = _MD5_HiBlockTable)
+                {
+                    return new ReadOnlySpan<byte>(ptr, MD5_DIGEST_SIZE);
+                }
+            }
+            init
+            {
+                fixed (byte* ptr = _MD5_HiBlockTable)
+                {
+                    value.CopyTo(new Span<byte>(ptr, MD5_DIGEST_SIZE));
+                }
+            }
+        }
 
-        //fixed byte _MD5_BetTable[MD5_DIGEST_SIZE];        // MD5 of the BET table before decryption
+        fixed byte _MD5_BetTable[MD5_DIGEST_SIZE];        // MD5 of the BET table before decryption
 
-        //public Span<byte> MD5_BetTable
-        //{
-        //    get
-        //    {
-        //        fixed (byte* ptr = _MD5_BetTable)
-        //        {
-        //            return new Span<byte>(ptr, MD5_DIGEST_SIZE);
-        //        }
-        //    }
-        //}
+        public ReadOnlySpan<byte> MD5_BetTable
+        {
+            get
+            {
+                fixed (byte* ptr = _MD5_BetTable)
+                {
+                    return new ReadOnlySpan<byte>(ptr, MD5_DIGEST_SIZE);
+                }
+            }
+            init
+            {
+                fixed (byte* ptr = _MD5_BetTable)
+                {
+                    value.CopyTo(new Span<byte>(ptr, MD5_DIGEST_SIZE));
+                }
+            }
+        }
 
-        //fixed byte _MD5_HetTable[MD5_DIGEST_SIZE];        // MD5 of the HET table before decryption
+        fixed byte _MD5_HetTable[MD5_DIGEST_SIZE];        // MD5 of the HET table before decryption
 
-        //public Span<byte> MD5_HetTable
-        //{
-        //    get
-        //    {
-        //        fixed (byte* ptr = _MD5_HetTable)
-        //        {
-        //            return new Span<byte>(ptr, MD5_DIGEST_SIZE);
-        //        }
-        //    }
-        //}
+        public ReadOnlySpan<byte> MD5_HetTable
+        {
+            get
+            {
+                fixed (byte* ptr = _MD5_HetTable)
+                {
+                    return new ReadOnlySpan<byte>(ptr, MD5_DIGEST_SIZE);
+                }
+            }
+            init
+            {
+                fixed (byte* ptr = _MD5_HetTable)
+                {
+                    value.CopyTo(new Span<byte>(ptr, MD5_DIGEST_SIZE));
+                }
+            }
+        }
 
-        //fixed byte _MD5_MpqHeader[MD5_DIGEST_SIZE];       // MD5 of the MPQ header from signature to (including) MD5_HetTable
+        fixed byte _MD5_MpqHeader[MD5_DIGEST_SIZE];       // MD5 of the MPQ header from signature to (including) MD5_HetTable
 
-        //public Span<byte> MD5_MpqHeader
-        //{
-        //    get
-        //    {
-        //        fixed (byte* ptr = _MD5_MpqHeader)
-        //        {
-        //            return new Span<byte>(ptr, MD5_DIGEST_SIZE);
-        //        }
-        //    }
-        //}
+        public ReadOnlySpan<byte> MD5_MpqHeader
+        {
+            get
+            {
+                fixed (byte* ptr = _MD5_MpqHeader)
+                {
+                    return new ReadOnlySpan<byte>(ptr, MD5_DIGEST_SIZE);
+                }
+            }
+            init
+            {
+                fixed (byte* ptr = _MD5_MpqHeader)
+                {
+                    value.CopyTo(new Span<byte>(ptr, MD5_DIGEST_SIZE));
+                }
+            }
+        }
 
     }
 }

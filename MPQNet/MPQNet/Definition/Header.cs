@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MPQNet.Definition
 {
-    internal abstract record class Header
+    public abstract record class Header
     {
 
     }

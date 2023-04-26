@@ -25,7 +25,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace MPQNet.Definition
 {
-    internal record class Header3: Header2
+    public record class Header3: Header2
     {
 
         protected ulong _ArchiveSize64;
