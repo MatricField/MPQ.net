@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace MPQNet.IO
@@ -68,12 +69,13 @@ namespace MPQNet.IO
         {
             var size = count * Marshal.SizeOf<T>();
             using (var stream = IOHandler.GetStream(offset, size))
+            using (var decrypted = new CryptoStream(stream, new MPQCryptoTransform(key), CryptoStreamMode.Read))
             {
-                var data = new byte[size];
-                stream.Read(data, 0, data.Length);
-                var decryptor = new MPQCryptor(key);
-                decryptor.DecryptDataInplace(data);
-                return data.MarshalArrayFromBuffer<T>(count);
+                //var data = new byte[size];
+                //stream.Read(data, 0, data.Length);
+                //var decryptor = new MPQCryptor(key);
+                //decryptor.DecryptDataInplace(data);
+                return decrypted.MarshalArrayFromStream<T>(count);
             }
         }
     }

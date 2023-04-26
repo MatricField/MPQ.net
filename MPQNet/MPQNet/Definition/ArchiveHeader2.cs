@@ -1,6 +1,6 @@
 ﻿//MIT License
 
-//Copyright(c) 2018 Mingxi "Lucien" Du
+//Copyright(c) 2023 Mingxi "Lucien" Du
 
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -20,40 +20,62 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+using MPQNet.Helper;
 
 namespace MPQNet.Definition
 {
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class ArchiveHeader2 : ArchiveHeader1
+    internal record class Header2 : Header1
     {
-        /// <summary>
-        /// Combine high bits and low bits of offset data
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static long MakeOffset64(long hightBits, uint lowBits)
-        {
-            return hightBits << 32 | lowBits;
-        }
+        protected ulong _ExtendedBlockTableOffset;
 
         /// <summary>
         /// Offset to the beginning of array of 16-bit high parts of file offsets.
         /// </summary>
-        public ulong ExtendedBlockTableOffset { get; }
+        public required virtual ulong ExtendedBlockTableOffset
+        {
+            get => _ExtendedBlockTableOffset;
+            init => _ExtendedBlockTableOffset = value;
+        }
 
         /// <summary>
         /// High 16 bits of the hash table offset for large archives.
         /// </summary>
-        private readonly ushort HashTableOffsetHigh;
+        protected ushort _HashTableOffsetHigh;
 
-        public override long HashTableOffset => MakeOffset64(HashTableOffsetHigh, (uint)base.HashTableOffset);
+        public required override long HashTableOffset
+        {
+            get => Math.CombineTo64(_HashTableOffsetHigh, _HashTableOffset);
+            init {
+                Math.BreakTo32(value, out var hightBits, out _HashTableOffset);
+                _HashTableOffsetHigh = (ushort)hightBits;
+            }
+        }
 
         /// <summary>
         /// High 16 bits of the block table offset for large archives.
         /// </summary>
-        private readonly ushort BlockTableOffsetHigh;
+        protected ushort _BlockTableOffsetHigh;
 
-        public override long BlockTableOffset => MakeOffset64(BlockTableOffsetHigh, (uint)base.BlockTableOffset);
+        public required override long BlockTableOffset
+        {
+            get => Math.CombineTo64(_BlockTableOffsetHigh, _BlockTableOffset);
+            init
+            {
+                Math.BreakTo32(value, out var hightBits, out _BlockTableOffset);
+                _BlockTableOffsetHigh = (ushort)hightBits;
+            }
+        }
+
+        public Header2()
+            :base()
+        {
+
+        }
+
+        public Header2(in RawHeader header)
+            : base(header)
+        {
+            _ExtendedBlockTableOffset = header.HiBlockTablePos64;
+        }
     }
 }

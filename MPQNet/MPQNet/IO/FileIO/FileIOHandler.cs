@@ -5,6 +5,8 @@ using MPQNet.IO.Streams;
 using System;
 using System.IO;
 using Ionic.BZip2;
+using System.IO.Compression;
+using System.Security.Cryptography;
 
 namespace MPQNet.IO.FileIO
 {
@@ -28,8 +30,7 @@ namespace MPQNet.IO.FileIO
             }
             else
             {
-                //TODO: Finish FileIOHandler
-                throw new NotImplementedException();
+                return OpenCompositeStream(info);
             }
         }
 
@@ -43,6 +44,26 @@ namespace MPQNet.IO.FileIO
                     DecryptionKey = key
                 };
             return OpenMPQBlock(blockInfo);
+        }
+
+        protected virtual Stream OpenCompositeStream(MPQFileInfo info)
+        {
+            //TODO: AddImpl
+            throw new NotImplementedException();
+            
+            long fileSize = info.Block.FileSize;
+            var sectorCount = fileSize / SectorSize;
+            if(fileSize % SectorSize != 0)
+            {
+                ++sectorCount;
+            }
+
+            if (sectorCount <= 0)
+            {
+                throw new InvalidDataException();
+            }
+
+            
         }
 
         protected virtual Stream OpenMPQBlock(BlockInfo info)
@@ -64,8 +85,10 @@ namespace MPQNet.IO.FileIO
             return stream;
         }
 
+        //protected virtual Stream Decrypt(Stream underlyingStream, uint key) =>
+        //    new DecryptStream(underlyingStream, key);
         protected virtual Stream Decrypt(Stream underlyingStream, uint key) =>
-            new DecryptStream(underlyingStream, key);
+            new CryptoStream(underlyingStream, new MPQCryptoTransform(key), CryptoStreamMode.Read);
 
         protected virtual Stream Decompress(Stream underlyingStream, CompressionFlags flags)
         {
@@ -83,7 +106,7 @@ namespace MPQNet.IO.FileIO
             }
             if (flags.HasFlag(CompressionFlags.DEFLATED))
             {
-                throw new NotImplementedException();
+                underlyingStream = new DeflateStream(underlyingStream, CompressionMode.Decompress);
             }
             if (flags.HasFlag(CompressionFlags.SPARSE))
             {

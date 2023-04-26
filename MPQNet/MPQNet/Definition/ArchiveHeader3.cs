@@ -1,6 +1,6 @@
 ﻿//MIT License
 
-//Copyright(c) 2018 Mingxi "Lucien" Du
+//Copyright(c) 2023 Mingxi "Lucien" Du
 
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -20,26 +20,55 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-using System.Runtime.InteropServices;
 
 namespace MPQNet.Definition
 {
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class ArchiveHeader3 : ArchiveHeader2
+    internal record class Header3: Header2
     {
+
+        protected ulong _ArchiveSize64;
+        protected ulong _BetTableOffset;
+        protected ulong _HetTableOffset;
+
         /// <summary>
         /// 64-bit version of the archive size
         /// </summary>
-        public ulong ArchiveSize64 { get; }
+        public required virtual ulong ArchiveSize64
+        {
+            get => _ArchiveSize64;
+            init => _ArchiveSize64 = value;
+        }
 
         /// <summary>
         /// 64-bit position of the BET table
         /// </summary>
-        public ulong BetTableOffset { get; }
+        public required virtual ulong BetTableOffset
+        {
+            get => _BetTableOffset;
+            init => _BetTableOffset = value;
+        }
 
         /// <summary>
         /// 64-bit position of the HET table
         /// </summary>
-        public ulong HetTableOffset { get; }
+        public required virtual ulong HetTableOffset
+        {
+            get => _HetTableOffset;
+            init => _HetTableOffset = value;
+        }
+
+        public Header3()
+            :base()
+        {
+
+        }
+
+        public Header3(in RawHeader raw)
+            : base(raw)
+        {
+            _ArchiveSize64 = raw.ArchiveSize64;
+            _BetTableOffset = raw.BetTablePos64;
+            _HetTableOffset = raw.HetTablePos64;
+        }
     }
 }

@@ -1,6 +1,6 @@
 ﻿//MIT License
 
-//Copyright(c) 2018 Mingxi "Lucien" Du
+//Copyright(c) 2023 Mingxi "Lucien" Du
 
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -20,81 +20,101 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-
 namespace MPQNet.Definition
 {
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class ArchiveHeader4 : ArchiveHeader3
+    internal record class Header4: Header3
     {
-        private const int MD5_DIGEST_SIZE = 0x10;
+        private ulong _HashTableSize64;
+        private ulong _BlockTableSize64;
+        private ulong _HiBlockTableSize64;
+        private ulong _HetTableSize64;
+        private ulong _BetTableSize64;
 
         /// <summary>
         /// Compressed size of the hash table
         /// </summary>
-        public ulong HashTableSize64 { get; }
+        public required virtual ulong HashTableSize64
+        {
+            get => _HashTableSize64;
+            init => _HashTableSize64 = value;
+        }
 
         /// <summary>
         /// Compressed size of the block table
         /// </summary>
-        public ulong BlockTableSize64 { get; }
+        public required virtual ulong BlockTableSize64
+        {
+            get => _BlockTableSize64;
+            init => _BlockTableSize64 = value;
+        }
 
         /// <summary>
         /// Compressed size of the hi-block table
         /// </summary>
-        public ulong HiBlockTableSize64 { get; }
+        public required virtual ulong HiBlockTableSize64
+        {
+            get => _HiBlockTableSize64;
+            init => _HiBlockTableSize64 = value;
+        }
 
         /// <summary>
         /// Compressed size of the HET block
         /// </summary>
-        public ulong HetTableSize64 { get; }
+        public required virtual ulong HetTableSize64
+        {
+            get => _HetTableSize64;
+            init => _HashTableSize64 = value;
+        }
 
         /// <summary>
         /// Compressed size of the BET block
         /// </summary>
-        public ulong BetTableSize64 { get; }
+        public required virtual ulong BetTableSize64
+        {
+            get => _BetTableSize64; 
+            init => _BetTableSize64 = value;
+        }
 
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MD5_DIGEST_SIZE)]
-        private byte[] _MD5_BlockTable;
-        /// <summary>
-        /// MD5 of the block table before decryption
-        /// </summary>
-        public IReadOnlyList<byte> MD5_BlockTable => _MD5_BlockTable;
+        //[MarshalAs(UnmanagedType.ByValArray, SizeConst = MD5_DIGEST_SIZE)]
+        //private byte[] _MD5_BlockTable;
+        ///// <summary>
+        ///// MD5 of the block table before decryption
+        ///// </summary>
+        //public IReadOnlyList<byte> MD5_BlockTable => _MD5_BlockTable;
 
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MD5_DIGEST_SIZE)]
-        private byte[] _MD5_HashTable;
-        /// <summary>
-        /// MD5 of the hash table before decryption
-        /// </summary>
-        public IReadOnlyList<byte> MD5_HashTable => _MD5_HashTable;
+        //[MarshalAs(UnmanagedType.ByValArray, SizeConst = MD5_DIGEST_SIZE)]
+        //private byte[] _MD5_HashTable;
+        ///// <summary>
+        ///// MD5 of the hash table before decryption
+        ///// </summary>
+        //public IReadOnlyList<byte> MD5_HashTable => _MD5_HashTable;
 
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MD5_DIGEST_SIZE)]
-        private byte[] _MD5_HiBlockTable;
-        /// <summary>
-        /// MD5 of the hi-block table
-        /// </summary>
-        public IReadOnlyList<byte> MD5_HiBlockTable => _MD5_HiBlockTable;
+        //[MarshalAs(UnmanagedType.ByValArray, SizeConst = MD5_DIGEST_SIZE)]
+        //private byte[] _MD5_HiBlockTable;
+        ///// <summary>
+        ///// MD5 of the hi-block table
+        ///// </summary>
+        //public IReadOnlyList<byte> MD5_HiBlockTable => _MD5_HiBlockTable;
 
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MD5_DIGEST_SIZE)]
-        private byte[] _MD5_BetTable;
-        /// <summary>
-        /// MD5 of the BET table before decryption
-        /// </summary>
-        public IReadOnlyList<byte> MD5_BetTable => _MD5_BetTable;
+        //[MarshalAs(UnmanagedType.ByValArray, SizeConst = MD5_DIGEST_SIZE)]
+        //private byte[] _MD5_BetTable;
+        ///// <summary>
+        ///// MD5 of the BET table before decryption
+        ///// </summary>
+        //public IReadOnlyList<byte> MD5_BetTable => _MD5_BetTable;
 
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MD5_DIGEST_SIZE)]
-        private byte[] _MD5_HetTable;
-        /// <summary>
-        /// MD5 of the HET table before decryption
-        /// </summary>
-        public IReadOnlyList<byte> MD5_HetTable => _MD5_HetTable;
+        //[MarshalAs(UnmanagedType.ByValArray, SizeConst = MD5_DIGEST_SIZE)]
+        //private byte[] _MD5_HetTable;
+        ///// <summary>
+        ///// MD5 of the HET table before decryption
+        ///// </summary>
+        //public IReadOnlyList<byte> MD5_HetTable => _MD5_HetTable;
 
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MD5_DIGEST_SIZE)]
-        private byte[] _MD5_MpqHeader;
-        /// <summary>
-        /// MD5 of the MPQ header from signature to (including) MD5_HetTable
-        /// </summary>
-        public IReadOnlyList<byte> MD5_MpqHeader => _MD5_MpqHeader;
+        //[MarshalAs(UnmanagedType.ByValArray, SizeConst = MD5_DIGEST_SIZE)]
+        //private byte[] _MD5_MpqHeader;
+        ///// <summary>
+        ///// MD5 of the MPQ header from signature to (including) MD5_HetTable
+        ///// </summary>
+        //public IReadOnlyList<byte> MD5_MpqHeader => _MD5_MpqHeader;
     }
 }
