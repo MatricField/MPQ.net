@@ -21,6 +21,8 @@
 //SOFTWARE.
 
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace MPQNet.Definition
 {
     internal record class Header3: Header2
@@ -63,6 +65,7 @@ namespace MPQNet.Definition
 
         }
 
+        [SetsRequiredMembers]
         public Header3(in RawHeader raw)
             : base(raw)
         {

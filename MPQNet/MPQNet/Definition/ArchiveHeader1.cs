@@ -20,6 +20,7 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
+using System.Diagnostics.CodeAnalysis;
 using Math = MPQNet.Helper.Math;
 
 namespace MPQNet.Definition
@@ -95,6 +96,7 @@ namespace MPQNet.Definition
 
         }
 
+        [SetsRequiredMembers]
         public Header1(in RawHeader raw)
         {
             _SectorSizeShift = raw.wBlockSize;

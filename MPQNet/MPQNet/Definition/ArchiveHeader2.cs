@@ -21,6 +21,7 @@
 //SOFTWARE.
 
 using MPQNet.Helper;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MPQNet.Definition
 {
@@ -72,6 +73,7 @@ namespace MPQNet.Definition
 
         }
 
+        [SetsRequiredMembers]
         public Header2(in RawHeader header)
             : base(header)
         {

@@ -20,6 +20,8 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace MPQNet.Definition
 {
     internal record class Header4: Header3
@@ -73,6 +75,23 @@ namespace MPQNet.Definition
         {
             get => _BetTableSize64; 
             init => _BetTableSize64 = value;
+        }
+
+        public Header4()
+            : base()
+        {
+
+        }
+
+        [SetsRequiredMembers]
+        public Header4(in RawHeader raw)
+            :base(raw)
+        {
+            _HashTableSize64 = raw.HashTableSize64;
+            _BlockTableSize64 = raw.BlockTableSize64;
+            _HiBlockTableSize64 = raw.HiBlockTableSize64;
+            _HetTableSize64 = raw.HetTableSize64;
+            _BetTableSize64 = raw.BetTableSize64;
         }
 
         //[MarshalAs(UnmanagedType.ByValArray, SizeConst = MD5_DIGEST_SIZE)]
