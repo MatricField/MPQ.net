@@ -10,12 +10,16 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using MPQNet.Cryptography;
 using MPQNet.IO;
+using MPQNet.Compression;
+using Ionic.BZip2;
 
 namespace MPQNet.ArchiveDetails
 {
     internal class Archive1 :
         IArchive
     {
+        protected readonly long BaseAddress;
+        protected readonly string ArchivePath;
         protected List<HashEntry> _HashTable;
         protected List<BlockEntry> _BlockTable;
 
@@ -58,6 +62,8 @@ namespace MPQNet.ArchiveDetails
 
         public Archive1(string archivePath, Header header, UserDataHeader userDataHeader)
         {
+            ArchivePath = archivePath;
+            BaseAddress = header.BaseAddress;
             var header4 = header as Header4;
             _HashTable = new List<HashEntry>(capacity: (int)header4.HashTableEntriesCount);
             using (var archiveStream = Archive.OpenFile(archivePath))
@@ -102,6 +108,35 @@ namespace MPQNet.ArchiveDetails
 
         public Stream OpenFile(string path)
         {
+            var dwIndex = HashString.HashDefault(path, HashType.TableIndex);
+            var dwName1 = HashString.HashDefault(path, HashType.NameA);
+            var dwName2 = HashString.HashDefault(path, HashType.NameB);
+            for(int i = (int)dwIndex & (_HashTable.Count - 1); ; i++)
+            {
+                var hashEntry = _HashTable[i];
+                if(hashEntry.Name1 == dwName1 && hashEntry.Name2 == dwName2)
+                {
+                    var blockEntry = _BlockTable[hashEntry.BlockIndex];
+                    var stream = Archive.OpenFile(ArchivePath);
+                    var fileBlock = stream.Substream(BaseAddress+blockEntry.FilePos, blockEntry.FileSize);
+                    if(blockEntry.Flags.HasFlag(MPQFileFlags.SINGLE_UNIT))
+                    {
+                        if(blockEntry.Flags.HasFlag(MPQFileFlags.COMPRESS))
+                        {
+                            var compressionMask = (CompressionFlags)fileBlock.ReadByte();
+                            switch(compressionMask)
+                            {
+                                case CompressionFlags.BZIP2:
+                                    return new BZip2InputStream(stream.Substream(BaseAddress + blockEntry.FilePos + 1, blockEntry.FileSize - 1));
+                            }
+                        }
+                    }
+                }
+                else if(hashEntry.BlockIndex == HashEntry.BLOCK_INDEX_EMPTY_END)
+                {
+                    throw new FileNotFoundException();
+                }
+            }
             throw new NotImplementedException();
         }
 

@@ -26,6 +26,10 @@ namespace MPQNet.ArchiveDetails
 {
     internal record class HashEntry
     {
+        public const int BLOCK_INDEX_EMPTY_END = unchecked((int)0xFFFFFFFF);
+
+        public const int BLOCK_INDEX_EMPTY_CONTINUE = unchecked((int)0xFFFFFFFE);
+
         /// <summary>
         /// Hash table entry is empty, and has always been empty.
         /// Terminates searches for a given file.

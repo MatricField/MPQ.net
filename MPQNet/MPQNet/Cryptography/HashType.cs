@@ -27,7 +27,7 @@ namespace MPQNet.Cryptography
     /// </summary>
     internal static class HashType
     {
-        public const uint TableOffset = 0x000;
+        public const uint TableIndex = 0x000;
         public const uint NameA = 0x100;
         public const uint NameB = 0x200;
         public const uint FileKey = 0x300;
