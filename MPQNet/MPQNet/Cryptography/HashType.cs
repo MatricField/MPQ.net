@@ -1,6 +1,6 @@
 ﻿//MIT License
 
-//Copyright(c) 2018 Mingxi "Lucien" Du
+//Copyright(c)2023 Mingxi "Lucien" Du
 
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -23,14 +23,14 @@
 namespace MPQNet.Cryptography
 {
     /// <summary>
-    /// Different types of hashes to make with <see cref="MPQCryptorBase"/>
+    /// Hash keys used in cryptography related algorithms
     /// </summary>
-    public static class HashType
+    internal static class HashType
     {
-        public const uint TableOffset = 0;
-        public const uint NameA = 1;
-        public const uint NameB = 2;
-        public const uint FileKey = 3;
-        public const uint Key2Mix = 4;
+        public const uint TableOffset = 0x000;
+        public const uint NameA = 0x100;
+        public const uint NameB = 0x200;
+        public const uint FileKey = 0x300;
+        public const uint Key2Mix = 0x400;
     }
 }

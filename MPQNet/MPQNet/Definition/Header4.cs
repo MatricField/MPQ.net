@@ -26,7 +26,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace MPQNet.Definition
 {
-    public record class Header4 : Header3
+    internal record class Header4 : Header3
     {
         protected ulong _HashTableSize64;
         protected ulong _BlockTableSize64;
@@ -152,8 +152,8 @@ namespace MPQNet.Definition
         }
 
         [SetsRequiredMembers]
-        public Header4(in RawHeader raw)
-            : base(raw)
+        public Header4(in RawHeader raw, long baseAddress)
+            : base(raw, baseAddress)
         {
             _HashTableSize64 = raw.HashTableSize64;
             _BlockTableSize64 = raw.BlockTableSize64;

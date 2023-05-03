@@ -30,7 +30,7 @@ namespace MPQNet.Definition
     /// Structure for HET table header
     /// </summary>
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class HetTableHeader : ExtTableHeader
+    internal class HetTableHeader : ExtTableHeader
     {
         private readonly uint _TableSize;
         private readonly uint _EntryCount;

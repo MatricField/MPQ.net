@@ -25,7 +25,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace MPQNet.Definition
 {
-    public record class Header3: Header2
+    internal record class Header3: Header2
     {
 
         protected ulong _ArchiveSize64;
@@ -66,8 +66,8 @@ namespace MPQNet.Definition
         }
 
         [SetsRequiredMembers]
-        public Header3(in RawHeader raw)
-            : base(raw)
+        public Header3(in RawHeader raw, long baseAddress)
+            : base(raw, baseAddress)
         {
             _ArchiveSize64 = raw.ArchiveSize64;
             _BetTableOffset = raw.BetTablePos64;

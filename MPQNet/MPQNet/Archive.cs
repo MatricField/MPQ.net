@@ -1,4 +1,5 @@
-﻿using MPQNet.Definition;
+﻿using MPQNet.ArchiveDetails;
+using MPQNet.Definition;
 using MPQNet.Helper;
 using MPQNet.IO;
 using MPQNet.IO.FileIO;
@@ -6,134 +7,81 @@ using MPQNet.IO.LowLevelIO;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace MPQNet
 {
-    //public static class Archive
-    //{
-    //    public static bool TryLoadArchiveFromFile(string path, out IArchive result)
-    //    {
-    //        var io = new MemoryMappedFileIO(path);
-    //        using (var stream = io.GetFullArchiveStream())
-    //        {
-    //            var infoSize = Marshal.SizeOf<ArchiveInfo>();
-    //            UserDataInfo userDataInfo = default;
-    //            bool notStop = true;
-    //            while (notStop)
-    //            {
-    //                var info = stream.MarshalObjectFromStream<ArchiveInfo>();
-    //                stream.Seek(-infoSize, SeekOrigin.Current);
-    //                switch (info.ID)
-    //                {
-    //                    case Signatures.MPQ_UserData:
-    //                        var userDataHeaderOffset = stream.Position;
-    //                        var userDataHeader = stream.MarshalObjectFromStream<UserDataHeader>();
-    //                        userDataInfo.UserDataOffset = userDataHeaderOffset;
-    //                        userDataInfo.UserDataSize = userDataHeader.UserDataSize;
-    //                        stream.Seek(userDataHeaderOffset + userDataHeader.HeaderOffset, SeekOrigin.Begin);
-    //                        break;
-    //                    case Signatures.MPQ:
-    //                        io.BaseOffset = stream.Position;
-    //                        if(userDataInfo.UserDataSize > 0)
-    //                        {
-    //                            userDataInfo.UserDataOffset -= stream.Position;
-    //                        }
-    //                        switch (info.FormatVersion)
-    //                        {
-    //                            case FormatVersions.V4:
-    //                                if(TryReadArchiveV4(io, userDataInfo, out result))
-    //                                {
-    //                                    return true;
-    //                                }
-    //                                else
-    //                                {
-    //                                    goto case FormatVersions.V3;
-    //                                }
-    //                            case FormatVersions.V3:
-    //                                if (TryReadArchiveV3(io, userDataInfo, out result))
-    //                                {
-    //                                    return true;
-    //                                }
-    //                                else
-    //                                {
-    //                                    goto case FormatVersions.V2;
-    //                                }
-    //                            case FormatVersions.V2:
-    //                              if (TryReadArchiveV2(io, userDataInfo, out result))
-    //                                {
-    //                                    return true;
-    //                                }
-    //                                else
-    //                                {
-    //                                    goto case FormatVersions.V1;
-    //                                }
-    //                            case FormatVersions.V1:
-    //                              if (TryReadArchiveV1(io, userDataInfo, out result))
-    //                                {
-    //                                    return true;
-    //                                }
-    //                                else
-    //                                {
-    //                                    goto default;
-    //                                }
-    //                            default:
-    //                                throw new NotSupportedException();
-    //                        }
-    //                    default:
-    //                        var pos = stream.Position;
-    //                        if (pos == stream.Seek(0x200, SeekOrigin.Current))
-    //                        {
-    //                            notStop = false;
-    //                        }
-    //                        break;
-    //                }
-    //            }
-    //        }
-    //        result = default;
-    //        return false;
-    //    }
+    public static class Archive
+    {
+        internal static Stream OpenFile(string path)
+        {
+            return File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+        }
+            
+        public static IArchive OpenArchive(string path)
+        {
+            if (!File.Exists(path))
+            {
+                throw new FileNotFoundException(path);
+            }
+            using (var stream = OpenFile(path))
+            {
+                var binaryReader = new BinaryReader(stream);
+                long headerBaseAddress = 0, userDataBaseAddress = 0;
+                UserDataHeader1 userDataHeader = null;
+                for(; ; )
+                {
+                    var sig = (Signatures)binaryReader.ReadUInt32();
+                    switch (sig)
+                    {
+                        case Signatures.MPQ:
+                            if (0 == headerBaseAddress)
+                            {
+                                headerBaseAddress = stream.Position - 4;
+                            }
+                            var headerSize = binaryReader.ReadUInt32();
+                            var archiveSize = binaryReader.ReadUInt32();
+                            var version = binaryReader.ReadUInt16();
+                            var headerData = new byte[208];
+                            stream.Read(headerData, 0, (int)(headerSize - 12));
+                            var rawHeader = MemoryMarshal.AsRef<RawHeader>(headerData);
+                            //header = version switch
+                            //{
+                            //    0 => new Header1(rawHeader, headerBaseAddress),
+                            //    1 => new Header2(rawHeader, headerBaseAddress),
+                            //    2 => new Header3(rawHeader, headerBaseAddress),
+                            //    3 => new Header4(rawHeader, headerBaseAddress),
+                            //    _ => throw new NotSupportedException()
+                            //};
 
-    //    private static bool TryReadArchiveV1(ILowLevelIOHandler IOHandler, in UserDataInfo userData, out IArchive archive)
-    //    {
-    //        using (var headerStream = IOHandler.GetStream(0, Marshal.SizeOf<ArchiveHeader1>()))
-    //        {
-    //            var header = headerStream.MarshalObjectFromStream<ArchiveHeader1>();
-    //            if (header.HashTableOffset != 0 && header.BlockTableOffset != 0)
-    //            {
-    //                var hashTable = new BlockHashTable(
-    //                    IOHandler,
-    //                    header.HashTableOffset,
-    //                    Convert.ToInt32(header.HashTableEntriesCount),
-    //                    header.BlockTableOffset,
-    //                    Convert.ToInt32(header.BlockTableEntriesCount));
-    //                var fileIO = new FileIOHandler(IOHandler, header.SectorSize);
-    //                archive = new MPQArchive(fileIO, hashTable, userData);
-    //                return true;
-    //            }
-    //            else
-    //            {
-    //                archive = null;
-    //                return false;
-    //            }
-    //        }
-    //    }
-    //    private static bool TryReadArchiveV2(ILowLevelIOHandler IOHandler, in UserDataInfo userData, out IArchive archive)
-    //    {
-    //        //TODO: read archive v2
-    //        archive = default;
-    //        return false;
-    //    }
-    //    private static bool TryReadArchiveV3(ILowLevelIOHandler IOHandler, in UserDataInfo userData, out IArchive archive)
-    //    {
-    //        //TODO: read archive v3
-    //        archive = default;
-    //        return false;
-    //    }
-    //    private static bool TryReadArchiveV4(ILowLevelIOHandler IOHandler, in UserDataInfo userData, out IArchive archive)
-    //    {
-    //        //TODO: read archive v4
-    //        archive = default;
-    //        return false;
-    //    }
-    //}
+                            switch(version)
+                            {
+                                case 0:
+                                    
+                                case 1:
+                                case 2:
+                                case 3:
+                                    return new Archive1(path, new Header4(rawHeader, headerBaseAddress), userDataHeader);
+                                default:
+                                    throw new NotSupportedException();
+                            }
+                        case Signatures.MPQ_UserData:
+                            userDataBaseAddress = stream.Position - 4;
+                            var userDataHeaderBytes = binaryReader.ReadBytes(0xC);
+                            var userDataHeaderRaw = MemoryMarshal.AsRef<RawUserData>(userDataHeaderBytes);
+                            userDataHeader = new UserDataHeader1(userDataHeaderRaw, userDataBaseAddress);
+                            headerBaseAddress = userDataBaseAddress + userDataHeader.HeaderOffset;
+                            stream.Seek(headerBaseAddress, SeekOrigin.Begin);
+                            break;
+                        default:
+                            stream.Seek(0x1FC, SeekOrigin.Current);
+                            break;
+                    }
+
+                }
+
+                throw new InvalidDataException();
+            }
+        }
+    }
 }

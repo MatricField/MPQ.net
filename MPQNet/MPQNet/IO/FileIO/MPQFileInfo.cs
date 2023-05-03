@@ -5,10 +5,10 @@ using System.Text;
 
 namespace MPQNet.IO.FileIO
 {
-    public sealed class MPQFileInfo
+    internal sealed class MPQFileInfo
     {
         public string Name { get; set; }
 
-        public BlockEntry Block { get; set; }
+        public RawBlockEntry Block { get; set; }
     }
 }

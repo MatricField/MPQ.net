@@ -1,6 +1,6 @@
 ﻿//MIT License
 
-//Copyright(c) 2018 Mingxi "Lucien" Du
+//Copyright(c) 2023 Mingxi "Lucien" Du
 
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -19,65 +19,44 @@
 //LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
-using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-
+using System.Diagnostics.CodeAnalysis;
 
 namespace MPQNet.Definition
 {
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public class UserDataHeader : MPQSectionBase, IEquatable<UserDataHeader>
+    internal record class UserDataHeader1 : UserDataHeader
     {
+        protected uint _UserDataSize;
+        protected uint _HeaderOffset;
+        protected uint _UserDataHeaderSize;
+
         /// <summary>
         /// Maximum size of the user data
         /// </summary>
-        public uint UserDataSize { get; }
+        public virtual required uint UserDataSize { get => _UserDataSize; init => _UserDataSize = value; }
 
         /// <summary>
         /// Offset of the MPQ header, relative to the begin of this header
         /// </summary>
-        public uint HeaderOffset { get; }
+        public virtual required uint HeaderOffset { get => _HeaderOffset; init => _HeaderOffset = value; }
 
         /// <summary>
         /// Appears to be size of user data header (Starcraft II maps)
         /// </summary>
-        public uint UserDataHeaderSize { get; }
+        public virtual required uint UserDataHeaderSize { get => _UserDataHeaderSize; init => _UserDataHeaderSize = value; }
 
-        #region Structural Equality
-        public override bool Equals(object obj)
+        public UserDataHeader1() :
+            base()
         {
-            return Equals(obj as UserDataHeader);
+
         }
 
-        public bool Equals(UserDataHeader other)
+        [SetsRequiredMembers]
+        public UserDataHeader1(in RawUserData raw, long baseAddress) :
+            base(baseAddress)
         {
-            return other != null &&
-                   base.Equals(other) &&
-                   UserDataSize == other.UserDataSize &&
-                   HeaderOffset == other.HeaderOffset &&
-                   UserDataHeaderSize == other.UserDataHeaderSize;
+            _UserDataSize = raw.cbUserDataSize;
+            _HeaderOffset = raw.dwHeaderOffs;
+            _UserDataHeaderSize = raw.cbUserDataHeader;
         }
-
-        public override int GetHashCode()
-        {
-            var hashCode = 1984121872;
-            hashCode = hashCode * -1521134295 + base.GetHashCode();
-            hashCode = hashCode * -1521134295 + UserDataSize.GetHashCode();
-            hashCode = hashCode * -1521134295 + HeaderOffset.GetHashCode();
-            hashCode = hashCode * -1521134295 + UserDataHeaderSize.GetHashCode();
-            return hashCode;
-        }
-
-        public static bool operator ==(UserDataHeader header1, UserDataHeader header2)
-        {
-            return EqualityComparer<UserDataHeader>.Default.Equals(header1, header2);
-        }
-
-        public static bool operator !=(UserDataHeader header1, UserDataHeader header2)
-        {
-            return !(header1 == header2);
-        } 
-        #endregion
     }
 }

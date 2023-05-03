@@ -2,10 +2,10 @@
 
 namespace MPQNet.IO
 {
-    public interface IMPQHashTable
+    internal interface IMPQHashTable
     {
-        BlockEntry this[string key] { get; }
+        RawBlockEntry this[string key] { get; }
 
-        bool TryGetValue(string key, out BlockEntry value);
+        bool TryGetValue(string key, out RawBlockEntry value);
     }
 }

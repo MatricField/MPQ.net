@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 
 namespace MPQNet.IO
 {
-    public class HetBetHashTable: 
+    internal class HetBetHashTable: 
         IMPQHashTable
     {
         private HetTableHeader _HetHeader;
@@ -42,7 +42,7 @@ namespace MPQNet.IO
 
         }
 
-        public BlockEntry this[string key]
+        public RawBlockEntry this[string key]
         {
             get
             {
@@ -62,7 +62,7 @@ namespace MPQNet.IO
             throw new NotImplementedException();
         }
 
-        public bool TryGetValue(string key, out BlockEntry value)
+        public bool TryGetValue(string key, out RawBlockEntry value)
         {
             throw new NotImplementedException();
         }

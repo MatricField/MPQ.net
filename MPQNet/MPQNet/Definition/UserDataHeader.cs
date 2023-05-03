@@ -1,6 +1,6 @@
 ﻿//MIT License
 
-//Copyright(c) 2018 Mingxi "Lucien" Du
+//Copyright(c) 2023 Mingxi "Lucien" Du
 
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -20,31 +20,25 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace MPQNet.Definition
 {
-    /// <summary>
-    /// Supported versions of MPQ Format
-    /// </summary>
-    public enum FormatVersions : ushort
+    internal abstract record class UserDataHeader
     {
-        /// <summary>
-        /// Used up to The Burning Crusade
-        /// </summary>
-        V1 = 0,
+        protected long _BaseAddress;
 
-        /// <summary>
-        /// The Burning Crusade and newer
-        /// </summary>
-        V2 = 1,
+        public virtual required long BaseAddress { get => _BaseAddress; init => _BaseAddress = value; }
 
-        /// <summary>
-        /// WoW - Cataclysm beta or newer
-        /// </summary>
-        V3 = 2,
+        protected UserDataHeader()
+        {
 
-        /// <summary>
-        /// WoW - Cataclysm beta or newer
-        /// </summary>
-        V4 = 3,
+        }
+
+        [SetsRequiredMembers]
+        protected UserDataHeader(long baseAddress)
+        {
+            _BaseAddress = baseAddress;
+        }
     }
 }
