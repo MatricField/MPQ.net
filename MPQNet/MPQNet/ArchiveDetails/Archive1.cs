@@ -18,15 +18,17 @@ namespace MPQNet.ArchiveDetails
     {
         protected readonly long BaseAddress;
         protected readonly string ArchivePath;
+        private byte[] _HashTable;
+        protected virtual Span<HashEntry> HashTable => MemoryMarshal.Cast<byte, HashEntry>(_HashTable);
+        protected byte[] _BlockTable;
+        protected virtual Span<BlockEntry> BlockTable => MemoryMarshal.Cast<byte,  BlockEntry>(_BlockTable);
 
-        protected List<HashEntry> _HashTable;
-        protected List<BlockEntry> _BlockTable;
         protected List<string> _FileList;
 
-        protected static List<TEntry> LoadMPQTable<TRaw, TEntry>(Stream stream, int count, uint compressedSize, uint decryptKey, Func<TRaw, TEntry> Convert)
-            where TRaw : struct
+        protected static byte[] LoadMPQTable<TEntry>(Stream stream, int count, uint compressedSize, uint decryptKey)
+            where TEntry : struct
         {
-            var entrySize = Marshal.SizeOf<TRaw>();
+            var entrySize = Marshal.SizeOf<TEntry>();
             if(decryptKey != 0)
             {
                 stream = new CryptoStream(stream,
@@ -38,26 +40,13 @@ namespace MPQNet.ArchiveDetails
             {
                 throw new NotImplementedException();
             }
-            var buffer = new byte[entrySize].AsSpan();
-            var result = new List<TEntry>(capacity: count);
-            for(; ; )
+            var buffer = new byte[tableRawSize];
+            var bytesRead = stream.Read(buffer, 0, buffer.Length);
+            if(bytesRead != buffer.Length)
             {
-                var bytesRead = stream.Read(buffer);
-                if (bytesRead == buffer.Length)
-                {
-                    var rawEntry = MemoryMarshal.AsRef<TRaw>(buffer);
-                    result.Add(Convert(rawEntry));
-                }
-                else if (bytesRead != 0)
-                {
-                    throw new InvalidOperationException();
-                }
-                else
-                {
-                    break;
-                }
+                throw new InvalidDataException();
             }
-            return result;
+            return buffer;
         }
 
         public Archive1(string archivePath, Header header, UserDataHeader userDataHeader)
@@ -65,32 +54,29 @@ namespace MPQNet.ArchiveDetails
             ArchivePath = archivePath;
             BaseAddress = header.BaseAddress;
             var header4 = header as Header4;
-            _HashTable = new List<HashEntry>(capacity: (int)header4.HashTableEntriesCount);
-            using (var archiveStream = Archive.OpenFile(archivePath))
+            using (var archiveStream = FileIO.OpenShared(archivePath))
             {
+                //Load hash table
                 var hashTableCompressedSize = (uint)header4.HashTableSize64;
                 var substream = archiveStream.Substream(
                         header4.BaseAddress + header4.HashTableOffset,
                         hashTableCompressedSize);
-                _HashTable = LoadMPQTable<RawHashEntry, HashEntry>(
+                _HashTable = LoadMPQTable<HashEntry>(
                     substream,
                     (int)header4.HashTableEntriesCount,
                     hashTableCompressedSize,
-                    SpecialFiles.HashTableKey,
-                    raw => new HashEntry(raw));
-            }
-            using (var archiveStream = Archive.OpenFile(archivePath))
-            {
+                    SpecialFiles.HashTableKey);
+                archiveStream.Seek(0, SeekOrigin.Begin);
+                //Load block table
                 var blockTableCompressedSize = (uint)header4.BlockTableSize64;
-                var substream = archiveStream.Substream(
+                substream = archiveStream.Substream(
                     header4.BaseAddress + header4.BlockTableOffset,
                     blockTableCompressedSize);
-                _BlockTable = LoadMPQTable<RawBlockEntry, BlockEntry>(
+                _BlockTable = LoadMPQTable<BlockEntry>(
                     substream,
                     (int)header4.BlockTableEntriesCount,
                     blockTableCompressedSize,
-                    SpecialFiles.BlockTableKey,
-                    raw => new BlockEntry(raw));
+                    SpecialFiles.BlockTableKey);
             }
             _FileList = new List<string>();
             if(TryOpenFile(SpecialFiles.ListFile, out var listFile))
@@ -123,13 +109,13 @@ namespace MPQNet.ArchiveDetails
             var dwIndex = HashString.HashDefault(path, HashType.TableIndex);
             var dwName1 = HashString.HashDefault(path, HashType.NameA);
             var dwName2 = HashString.HashDefault(path, HashType.NameB);
-            for(int i = (int)dwIndex & (_HashTable.Count - 1); ; i++)
+            for(int i = (int)dwIndex & (HashTable.Length - 1); ; i++)
             {
-                var hashEntry = _HashTable[i];
+                ref readonly var hashEntry = ref HashTable[i];
                 if(hashEntry.Name1 == dwName1 && hashEntry.Name2 == dwName2)
                 {
-                    var blockEntry = _BlockTable[hashEntry.BlockIndex];
-                    var stream = Archive.OpenFile(ArchivePath);
+                    ref readonly var blockEntry = ref BlockTable[hashEntry.BlockIndex];
+                    var stream = FileIO.OpenShared(ArchivePath);
                     var fileBlock = stream.Substream(BaseAddress+blockEntry.FilePos, blockEntry.FileSize);
                     if(blockEntry.Flags.HasFlag(MPQFileFlags.SINGLE_UNIT))
                     {
