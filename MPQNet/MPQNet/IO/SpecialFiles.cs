@@ -29,16 +29,16 @@ namespace MPQNet.IO
         /// <summary>
         /// Not a file, containing the hash table
         /// </summary>
-        public const string HashTable = "(hash table)";
+        internal const string HashTable = "(hash table)";
 
-        public static readonly uint HashTableKey = HashString.HashDefault(HashTable, HashType.FileKey);
+        internal static readonly uint HashTableKey = HashString.HashDefault(HashTable, HashType.FileKey);
 
         /// <summary>
         /// Not a file, containing the block table
         /// </summary>
-        public const string BlockTable = "(block table)";
+        internal const string BlockTable = "(block table)";
 
-        public static readonly uint BlockTableKey = HashString.HashDefault(BlockTable, HashType.FileKey);
+        internal static readonly uint BlockTableKey = HashString.HashDefault(BlockTable, HashType.FileKey);
 
         /// <summary>
         /// Simply a text file with file paths separated by ';', '\n', '\r', or some combination of these. The file "(listfile)" may not be listed in the listfile.

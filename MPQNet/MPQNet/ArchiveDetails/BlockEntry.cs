@@ -22,23 +22,25 @@
 
 using MPQNet.Definition;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 
 namespace MPQNet.ArchiveDetails
 {
     /// <summary>
     /// File description block contains informations about the file
     /// </summary>
-    internal record class BlockEntry
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    internal record struct BlockEntry
     {
-        protected uint _FilePos;
-        protected uint _CompressedSize;
-        protected uint _FileSize;
-        protected MPQFileFlags _Flags;
+        private uint _FilePos;
+        private uint _CompressedSize;
+        private uint _FileSize;
+        private MPQFileFlags _Flags;
 
         /// <summary>
         ///  Offset of the beginning of the file, relative to the beginning of the archive.
         /// </summary>
-        public required virtual uint FilePos
+        public required uint FilePos
         {
             get => _FilePos;
             init => _FilePos = value;
@@ -47,7 +49,7 @@ namespace MPQNet.ArchiveDetails
         /// <summary>
         /// Compressed file size
         /// </summary>
-        public required virtual uint CompressedSize
+        public required uint CompressedSize
         {
             get => _CompressedSize;
             init => _CompressedSize = value;
@@ -57,7 +59,7 @@ namespace MPQNet.ArchiveDetails
         /// Only valid if the block is a file; otherwise meaningless, and should be 0.
         /// If the file is compressed, this is the size of the uncompressed file data.
         /// </summary>
-        public required virtual uint FileSize
+        public required uint FileSize
         {
             get => _FileSize;
             init => _FileSize = value;
@@ -66,33 +68,10 @@ namespace MPQNet.ArchiveDetails
         /// <summary>
         /// Flags for the file.
         /// </summary>
-        public required virtual MPQFileFlags Flags
+        public required MPQFileFlags Flags
         {
             get => _Flags;
             init => _Flags = value;
-        }
-
-        public BlockEntry()
-        {
-
-        }
-
-        [SetsRequiredMembers]
-        public BlockEntry(in RawBlockEntry raw)
-        {
-            _FilePos = raw._FilePos;
-            _CompressedSize = raw._CompressedSize;
-            _FileSize = raw._FileSize;
-            _Flags = raw._Flags;
-        }
-
-        public void ToRaw(out RawBlockEntry raw)
-        {
-            raw = new RawBlockEntry();
-            raw._FilePos = _FilePos;
-            raw._CompressedSize = _CompressedSize;
-            raw._FileSize = _FileSize;
-            raw._Flags = _Flags;
         }
     }
 }
